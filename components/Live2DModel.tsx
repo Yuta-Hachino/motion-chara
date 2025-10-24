@@ -2,23 +2,34 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
-import { Live2DModel } from "pixi-live2d-display";
 
 // Enable Live2D global mixins for PIXI
 if (typeof window !== "undefined") {
   (window as any).PIXI = PIXI;
 }
 
+// Dynamically import Live2D to avoid SSR issues
+let Live2DModel: any = null;
+if (typeof window !== "undefined") {
+  import("pixi-live2d-display").then((module) => {
+    Live2DModel = module.Live2DModel;
+  });
+}
+
 interface Live2DModelProps {
   modelPath: string;
   audioVolume: number; // 0-1 range
   onModelLoaded?: () => void;
+  positionY?: number; // Y position offset (-1 to 1, default 0)
+  scale?: number; // Scale multiplier (default 1)
 }
 
 export default function Live2DModelComponent({
   modelPath,
   audioVolume,
   onModelLoaded,
+  positionY = 0,
+  scale = 1,
 }: Live2DModelProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
@@ -31,7 +42,35 @@ export default function Live2DModelComponent({
     const initLive2D = async () => {
       if (!canvasRef.current) return;
 
+      // Prevent multiple initializations
+      if (appRef.current) return;
+
+      // Wait for Live2DModel to be loaded
+      if (!Live2DModel) {
+        const checkModel = setInterval(() => {
+          if (Live2DModel) {
+            clearInterval(checkModel);
+            initLive2D();
+          }
+        }, 100);
+        return;
+      }
+
+      // Wait for Live2D SDK to be loaded
+      if (typeof window !== 'undefined' && (!(window as any).Live2DCubismCore && !(window as any).Live2D)) {
+        const checkSDK = setInterval(() => {
+          if ((window as any).Live2DCubismCore || (window as any).Live2D) {
+            clearInterval(checkSDK);
+            initLive2D();
+          }
+        }, 100);
+        return;
+      }
+
       try {
+        // Clear any existing content
+        canvasRef.current.innerHTML = '';
+
         // Create PIXI Application
         const app = new PIXI.Application({
           width: 640,
@@ -40,7 +79,6 @@ export default function Live2DModelComponent({
           antialias: true,
         });
 
-        await app.init();
         appRef.current = app;
         canvasRef.current.appendChild(app.view as HTMLCanvasElement);
 
@@ -51,11 +89,11 @@ export default function Live2DModelComponent({
         // Scale and position model
         const scaleX = app.screen.width * 0.8 / model.width;
         const scaleY = app.screen.height * 0.8 / model.height;
-        const scale = Math.min(scaleX, scaleY);
+        const baseScale = Math.min(scaleX, scaleY);
 
-        model.scale.set(scale);
+        model.scale.set(baseScale * scale);
         model.x = app.screen.width / 2;
-        model.y = app.screen.height / 2;
+        model.y = app.screen.height / 2 + (positionY * app.screen.height / 2);
         model.anchor.set(0.5, 0.5);
 
         app.stage.addChild(model);
@@ -82,9 +120,20 @@ export default function Live2DModelComponent({
     initLive2D();
 
     return () => {
-      if (blinkTimerRef.current) clearTimeout(blinkTimerRef.current);
+      if (blinkTimerRef.current) {
+        clearTimeout(blinkTimerRef.current);
+        blinkTimerRef.current = null;
+      }
+      if (modelRef.current) {
+        modelRef.current.destroy();
+        modelRef.current = null;
+      }
       if (appRef.current) {
-        appRef.current.destroy(true);
+        appRef.current.destroy(true, { children: true, texture: true, baseTexture: true });
+        appRef.current = null;
+      }
+      if (canvasRef.current) {
+        canvasRef.current.innerHTML = '';
       }
     };
   }, [modelPath, onModelLoaded]);
@@ -125,6 +174,22 @@ export default function Live2DModelComponent({
       smoothVolume
     );
   }, [audioVolume]);
+
+  // Update model position and scale when props change
+  useEffect(() => {
+    if (!modelRef.current || !appRef.current) return;
+
+    const app = appRef.current;
+    const model = modelRef.current;
+
+    // Recalculate scale
+    const scaleX = app.screen.width * 0.8 / model.width;
+    const scaleY = app.screen.height * 0.8 / model.height;
+    const baseScale = Math.min(scaleX, scaleY);
+
+    model.scale.set(baseScale * scale);
+    model.y = app.screen.height / 2 + (positionY * app.screen.height / 2);
+  }, [positionY, scale]);
 
   return (
     <div className="relative">

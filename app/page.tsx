@@ -14,7 +14,9 @@ export default function Home() {
   const [audioVolume, setAudioVolume] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [modelPath, setModelPath] = useState("/models/haru/haru_greeter_t03.model3.json");
+  const [modelPath, setModelPath] = useState("/live2d/lan/lan.model3.json");
+  const [positionY, setPositionY] = useState(-0.3); // Default position slightly up
+  const [modelScale, setModelScale] = useState(1.0);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const analyzerRef = useRef<AudioAnalyzer | null>(null);
@@ -128,6 +130,8 @@ export default function Home() {
             <Live2DModelComponent
               modelPath={modelPath}
               audioVolume={audioVolume}
+              positionY={positionY}
+              scale={modelScale}
             />
           </div>
 
@@ -179,13 +183,73 @@ export default function Home() {
                 onChange={(e) => setModelPath(e.target.value)}
                 className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
               >
-                <option value="/models/haru/haru_greeter_t03.model3.json">
-                  Haru (デフォルト)
+                <option value="/live2d/lan/lan.model3.json">
+                  Lan (デフォルト)
                 </option>
               </select>
               <p className="mt-2 text-sm text-gray-600">
-                Live2Dモデルを/public/modelsに配置してください
+                Live2Dモデルを/public/live2dに配置してください
               </p>
+            </div>
+
+            {/* Position & Scale Controls */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                モデル調整
+              </h2>
+
+              {/* Position Y Slider */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  縦位置: {positionY.toFixed(2)}
+                </label>
+                <input
+                  type="range"
+                  min="-1"
+                  max="1"
+                  step="0.05"
+                  value={positionY}
+                  onChange={(e) => setPositionY(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>上</span>
+                  <span>中央</span>
+                  <span>下</span>
+                </div>
+              </div>
+
+              {/* Scale Slider */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  サイズ: {modelScale.toFixed(2)}x
+                </label>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="2"
+                  step="0.1"
+                  value={modelScale}
+                  onChange={(e) => setModelScale(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>小</span>
+                  <span>通常</span>
+                  <span>大</span>
+                </div>
+              </div>
+
+              {/* Reset Button */}
+              <button
+                onClick={() => {
+                  setPositionY(-0.3);
+                  setModelScale(1.0);
+                }}
+                className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+              >
+                デフォルトに戻す
+              </button>
             </div>
 
             {/* Error Display */}
