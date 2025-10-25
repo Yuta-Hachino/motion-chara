@@ -59,8 +59,8 @@ export interface Live2DCharacterProps {
   backgroundColor?: number;
 
   /**
-   * Canvas background alpha (0-1)
-   * 0: fully transparent, 1: fully opaque
+   * Canvas background transparency (0-1)
+   * 0 = fully transparent, 1 = fully opaque
    * @default 1
    */
   backgroundAlpha?: number;

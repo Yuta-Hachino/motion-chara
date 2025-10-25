@@ -83,11 +83,12 @@ preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreload
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     useEffect(() => {
+        let isMounted = true; // Track if component is still mounted
         const initLive2D = async () => {
-            if (!canvasRef.current)
+            if (!canvasRef.current || !isMounted)
                 return;
-            // Prevent multiple initializations
-            if (appRef.current)
+            // Prevent multiple initializations - but allow re-initialization after cleanup
+            if (appRef.current && appRef.current.stage)
                 return;
             // Wait for Live2DModel to be loaded
             if (!Live2DModel) {
@@ -120,7 +121,17 @@ preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreload
                     backgroundAlpha,
                     antialias,
                     resolution,
+                    transparent: backgroundAlpha < 1, // Enable transparent mode if alpha is less than 1
                 });
+                // Wait for stage to be initialized (sometimes needed in React Strict Mode)
+                let retries = 0;
+                while (!app.stage && retries < 50) {
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                    retries++;
+                }
+                if (!app.stage) {
+                    throw new Error('PIXI Application stage failed to initialize');
+                }
                 appRef.current = app;
                 canvasRef.current.appendChild(app.view);
                 // Configure FPS limit
@@ -150,9 +161,9 @@ preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreload
                 // Load Live2D model
                 const model = await Live2DModel.from(modelPath);
                 modelRef.current = model;
-                // Scale and position model - use width/height directly instead of app.screen
-                const screenWidth = app.screen?.width || width;
-                const screenHeight = app.screen?.height || height;
+                // Scale and position model - use width/height props directly
+                const screenWidth = width * resolution;
+                const screenHeight = height * resolution;
                 const scaleX = (screenWidth * 0.8) / model.width;
                 const scaleY = (screenHeight * 0.8) / model.height;
                 const baseScale = Math.min(scaleX, scaleY);
@@ -160,7 +171,40 @@ preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreload
                 model.x = screenWidth / 2 + (positionX * screenWidth / 2);
                 model.y = screenHeight / 2 + (positionY * screenHeight / 2);
                 model.anchor.set(0.5, 0.5);
-                app.stage.addChild(model);
+                // Ensure component is still mounted and app is valid (React Strict Mode safety)
+                if (!isMounted) {
+                    console.warn('Component unmounted during model loading, skipping stage operations');
+                    return;
+                }
+                if (!app) {
+                    throw new Error('PIXI Application is not available');
+                }
+                if (!app.stage) {
+                    // Try to wait for stage to be available
+                    let stageRetries = 0;
+                    while (!app.stage && stageRetries < 20 && isMounted) {
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                        stageRetries++;
+                    }
+                    if (!isMounted) {
+                        console.warn('Component unmounted while waiting for stage');
+                        return;
+                    }
+                    if (!app.stage) {
+                        throw new Error('PIXI stage is not available for adding model');
+                    }
+                }
+                // Double-check stage exists right before adding
+                if (app.stage && isMounted) {
+                    app.stage.addChild(model);
+                }
+                else if (!isMounted) {
+                    console.warn('Component unmounted, skipping addChild');
+                    return;
+                }
+                else {
+                    throw new Error('PIXI stage became null during model loading');
+                }
                 // Initialize parameters
                 if (model.internalModel && model.internalModel.coreModel) {
                     model.internalModel.coreModel.setParameterValueById('ParamMouthOpenY', 0);
@@ -192,6 +236,7 @@ preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreload
         };
         initLive2D();
         return () => {
+            isMounted = false; // Mark component as unmounted
             if (blinkTimerRef.current) {
                 clearTimeout(blinkTimerRef.current);
                 blinkTimerRef.current = null;
@@ -298,18 +343,17 @@ preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreload
     useEffect(() => {
         if (!modelRef.current || !appRef.current)
             return;
-        const app = appRef.current;
         const model = modelRef.current;
-        // Recalculate scale - use width/height directly instead of app.screen
-        const screenWidth = app.screen?.width || width;
-        const screenHeight = app.screen?.height || height;
+        // Recalculate scale - use width/height props directly
+        const screenWidth = width * resolution;
+        const screenHeight = height * resolution;
         const scaleX = (screenWidth * 0.8) / model.width;
         const scaleY = (screenHeight * 0.8) / model.height;
         const baseScale = Math.min(scaleX, scaleY);
         model.scale.set(baseScale * scale);
         model.x = screenWidth / 2 + (positionX * screenWidth / 2);
         model.y = screenHeight / 2 + (positionY * screenHeight / 2);
-    }, [positionY, positionX, scale, width, height]);
+    }, [positionY, positionX, scale, width, height, resolution]);
     // Expression change handler
     useEffect(() => {
         if (!modelRef.current || !expression || !expressions)
