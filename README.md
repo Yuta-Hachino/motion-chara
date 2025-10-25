@@ -1,4 +1,4 @@
-# motion-chara
+# react-live2d-lipsync
 
 Live2Dキャラクターをリップシンクとまばたきアニメーション付きで表示するReactコンポーネントライブラリと、そのサンプルアプリケーション。
 
@@ -22,7 +22,7 @@ Reactコンポーネントとして使用可能なLive2Dリップシンクライ
 **インストール**:
 ```bash
 # GitHubから直接インストール
-npm install Yuta-Hachino/motion-chara#v1.0.0
+npm install Yuta-Hachino/react-live2d-lipsync#v1.0.0
 ```
 
 **詳細**: [react-live2d-lipsync/README.md](./react-live2d-lipsync/README.md)
@@ -45,7 +45,7 @@ npm install Yuta-Hachino/motion-chara#v1.0.0
 
 ```bash
 # 1. インストール
-npm install Yuta-Hachino/motion-chara#v1.0.0
+npm install Yuta-Hachino/react-live2d-lipsync#v1.0.0
 
 # 2. 使用
 import { Live2DCharacter, useLive2DAudio } from 'react-live2d-lipsync';
@@ -262,8 +262,8 @@ MIT
 
 ## 📞 お問い合わせ
 
-- GitHub Issues: [https://github.com/Yuta-Hachino/motion-chara/issues](https://github.com/Yuta-Hachino/motion-chara/issues)
-- Repository: [https://github.com/Yuta-Hachino/motion-chara](https://github.com/Yuta-Hachino/motion-chara)
+- GitHub Issues: [https://github.com/Yuta-Hachino/react-live2d-lipsync/issues](https://github.com/Yuta-Hachino/react-live2d-lipsync/issues)
+- Repository: [https://github.com/Yuta-Hachino/react-live2d-lipsync](https://github.com/Yuta-Hachino/react-live2d-lipsync)
 
 ---
 

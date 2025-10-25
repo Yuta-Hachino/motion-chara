@@ -11,7 +11,7 @@ NPMパッケージとして配布可能なReactコンポーネントライブラ
 **インストール方法**:
 ```bash
 # GitHubから直接インストール
-npm install Yuta-Hachino/motion-chara#v1.0.0
+npm install Yuta-Hachino/react-live2d-lipsync#v1.0.0
 
 # または、このディレクトリをサブパッケージとして
 cd react-live2d-lipsync

@@ -72,7 +72,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Yuta-Hachino/motion-chara",
-    "directory": "react-live2d-lipsync"
+    "url": "https://github.com/Yuta-Hachino/react-live2d-lipsync"
   }
 }

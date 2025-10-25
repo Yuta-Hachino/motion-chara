@@ -6,7 +6,7 @@ NPMに公開せず、GitHubから直接インストール可能な形でリリ�
 
 GitHubから直接インストール:
 ```bash
-npm install Yuta-Hachino/motion-chara#v1.0.0
+npm install Yuta-Hachino/react-live2d-lipsync#v1.0.0
 ```
 
 ## 📋 準備（初回のみ）
@@ -25,7 +25,7 @@ cat .gitignore
 
 ```bash
 # GitHubでリポジトリを作成後
-git remote add origin https://github.com/Yuta-Hachino/motion-chara.git
+git remote add origin https://github.com/Yuta-Hachino/react-live2d-lipsync.git
 git branch -M main
 git push -u origin main
 ```
@@ -114,13 +114,13 @@ git push origin v1.0.0
 ### 最新版
 
 ```bash
-npm install Yuta-Hachino/motion-chara
+npm install Yuta-Hachino/react-live2d-lipsync
 ```
 
 ### 特定バージョン
 
 ```bash
-npm install Yuta-Hachino/motion-chara#v1.0.0
+npm install Yuta-Hachino/react-live2d-lipsync#v1.0.0
 ```
 
 ### package.json に記載
@@ -128,7 +128,7 @@ npm install Yuta-Hachino/motion-chara#v1.0.0
 ```json
 {
   "dependencies": {
-    "react-live2d-lipsync": "github:Yuta-Hachino/motion-chara#v1.0.0"
+    "react-live2d-lipsync": "github:Yuta-Hachino/react-live2d-lipsync#v1.0.0"
   }
 }
 ```
@@ -201,7 +201,7 @@ make release-push
 ### インストール
 
 ```bash
-npm install Yuta-Hachino/motion-chara#v1.0.0-beta.1
+npm install Yuta-Hachino/react-live2d-lipsync#v1.0.0-beta.1
 ```
 
 ## 📝 タグ命名規則

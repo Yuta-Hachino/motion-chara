@@ -24,15 +24,15 @@ npm install react-live2d-lipsync
 
 ```bash
 # Latest version
-npm install Yuta-Hachino/motion-chara
+npm install Yuta-Hachino/react-live2d-lipsync
 
 # Specific version (tag)
-npm install Yuta-Hachino/motion-chara#v1.0.0
+npm install Yuta-Hachino/react-live2d-lipsync#v1.0.0
 
 # In package.json
 {
   "dependencies": {
-    "react-live2d-lipsync": "github:Yuta-Hachino/motion-chara#v1.0.0"
+    "react-live2d-lipsync": "github:Yuta-Hachino/react-live2d-lipsync#v1.0.0"
   }
 }
 ```

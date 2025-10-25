@@ -154,7 +154,7 @@ npm login
   "author": "Your Name <your.email@example.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourYuta-Hachino/motion-chara"
+    "url": "https://github.com/yourYuta-Hachino/react-live2d-lipsync"
   }
 }
 ```
