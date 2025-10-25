@@ -203,22 +203,34 @@ npm run dev
 
 ## 🌐 デプロイ
 
-### NPMパッケージの公開
+### パッケージのリリース
 
-GitHubタグをプッシュすると、自動的にNPMに公開されます:
+GitHubタグをプッシュすると、自動的にGitHub Releaseが作成されます:
 
 ```bash
 cd react-live2d-lipsync
 
-# ビルド + コミット + プッシュ
-make release-github
+# 1. バージョンアップ（package.jsonを更新してタグ作成）
+npm version patch  # または minor, major
 
-# タグ作成してプッシュ
-make release-tag TAG=v1.0.0
-make release-push
+# 2. ビルド + コミット
+npm run build
+git add dist/
+git commit -m "build: update dist files for vX.X.X"
+
+# 3. プッシュ（タグも含む）
+git push --follow-tags
 ```
 
-GitHub Actionsが自動的にパッケージをNPMに公開します。
+GitHub Actionsが自動的に：
+1. distファイルをビルド
+2. mainブランチにコミット
+3. GitHub Releaseを作成
+
+ユーザーは以下のコマンドでインストール可能になります：
+```bash
+npm install Yuta-Hachino/react-live2d-lipsync#v1.0.0
+```
 
 ### サンプルアプリのデプロイ（GitHub Pages）
 
