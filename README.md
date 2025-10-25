@@ -203,32 +203,46 @@ npm run dev
 
 ## 🌐 デプロイ
 
-### パッケージのリリース
+### パッケージのリリース（完全自動化）
 
-GitHubタグをプッシュすると、自動的にGitHub Releaseが作成されます:
+GitHubのActionsタブから、ボタン1つでリリース可能：
+
+1. GitHubリポジトリの **Actions** タブを開く
+2. **Auto Release** ワークフローを選択
+3. **Run workflow** をクリック
+4. バージョンタイプを選択（patch / minor / major）
+5. **Run workflow** を実行
+
+GitHub Actionsが自動的に：
+1. ✅ バリデーション（型チェック、ビルド確認）
+2. ✅ バージョンアップ（package.json更新、タグ作成）
+3. ✅ パッケージビルド
+4. ✅ distファイルをコミット
+5. ✅ mainブランチとタグをプッシュ
+6. ✅ GitHub Releaseを作成
+
+**ローカルからのリリース（Makefileを使用）:**
 
 ```bash
 cd react-live2d-lipsync
 
-# 1. バージョンアップ（package.jsonを更新してタグ作成）
-npm version patch  # または minor, major
+# パッチバージョン (1.0.0 → 1.0.1)
+make release-patch
 
-# 2. ビルド + コミット
-npm run build
-git add dist/
-git commit -m "build: update dist files for vX.X.X"
+# マイナーバージョン (1.0.0 → 1.1.0)
+make release-minor
 
-# 3. プッシュ（タグも含む）
-git push --follow-tags
+# メジャーバージョン (1.0.0 → 2.0.0)
+make release-major
 ```
 
-GitHub Actionsが自動的に：
-1. distファイルをビルド
-2. mainブランチにコミット
-3. GitHub Releaseを作成
+**インストール:**
 
-ユーザーは以下のコマンドでインストール可能になります：
 ```bash
+# 最新版
+npm install Yuta-Hachino/react-live2d-lipsync
+
+# 特定バージョン
 npm install Yuta-Hachino/react-live2d-lipsync#v1.0.0
 ```
 

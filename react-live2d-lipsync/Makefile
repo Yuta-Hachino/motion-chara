@@ -1,4 +1,4 @@
-.PHONY: help install dev build clean rebuild typecheck validate test publish-patch publish-minor publish-major publish-beta publish-dry pack link unlink info prepare-github release-tag release-push release-github
+.PHONY: help install dev build clean rebuild typecheck validate test publish-patch publish-minor publish-major publish-beta publish-dry pack link unlink info prepare-github release-tag release-push release-github release-patch release-minor release-major
 
 # デフォルトターゲット: ヘルプを表示
 help:
@@ -32,6 +32,11 @@ help:
 	@echo "  make release-github   - Build, commit dist, and push"
 	@echo "  make release-tag      - Create Git tag (usage: make release-tag TAG=v1.0.0)"
 	@echo "  make release-push     - Push commits and tags"
+	@echo ""
+	@echo "Automated Release (All-in-one):"
+	@echo "  make release-patch    - Auto release patch version (1.0.0 → 1.0.1)"
+	@echo "  make release-minor    - Auto release minor version (1.0.0 → 1.1.0)"
+	@echo "  make release-major    - Auto release major version (1.0.0 → 2.0.0)"
 	@echo ""
 
 # 依存関係のインストール
@@ -122,3 +127,72 @@ release-tag:
 # プッシュ
 release-push:
 	npm run release:push
+
+# 自動リリース: パッチ (1.0.0 → 1.0.1)
+release-patch:
+	@echo "🚀 Starting automated patch release..."
+	@echo ""
+	@echo "Step 1/5: Running validation..."
+	npm run validate
+	@echo ""
+	@echo "Step 2/5: Bumping patch version..."
+	npm version patch
+	@echo ""
+	@echo "Step 3/5: Building package..."
+	npm run build
+	@echo ""
+	@echo "Step 4/5: Committing dist files..."
+	git add dist/
+	git diff --staged --quiet || git commit -m "build: update dist files for $$(node -p "require('./package.json').version")"
+	@echo ""
+	@echo "Step 5/5: Pushing to GitHub..."
+	git push --follow-tags
+	@echo ""
+	@echo "✅ Release complete! GitHub Actions will create the release."
+	@echo "Version: $$(node -p "require('./package.json').version")"
+
+# 自動リリース: マイナー (1.0.0 → 1.1.0)
+release-minor:
+	@echo "🚀 Starting automated minor release..."
+	@echo ""
+	@echo "Step 1/5: Running validation..."
+	npm run validate
+	@echo ""
+	@echo "Step 2/5: Bumping minor version..."
+	npm version minor
+	@echo ""
+	@echo "Step 3/5: Building package..."
+	npm run build
+	@echo ""
+	@echo "Step 4/5: Committing dist files..."
+	git add dist/
+	git diff --staged --quiet || git commit -m "build: update dist files for $$(node -p "require('./package.json').version")"
+	@echo ""
+	@echo "Step 5/5: Pushing to GitHub..."
+	git push --follow-tags
+	@echo ""
+	@echo "✅ Release complete! GitHub Actions will create the release."
+	@echo "Version: $$(node -p "require('./package.json').version")"
+
+# 自動リリース: メジャー (1.0.0 → 2.0.0)
+release-major:
+	@echo "🚀 Starting automated major release..."
+	@echo ""
+	@echo "Step 1/5: Running validation..."
+	npm run validate
+	@echo ""
+	@echo "Step 2/5: Bumping major version..."
+	npm version major
+	@echo ""
+	@echo "Step 3/5: Building package..."
+	npm run build
+	@echo ""
+	@echo "Step 4/5: Committing dist files..."
+	git add dist/
+	git diff --staged --quiet || git commit -m "build: update dist files for $$(node -p "require('./package.json').version")"
+	@echo ""
+	@echo "Step 5/5: Pushing to GitHub..."
+	git push --follow-tags
+	@echo ""
+	@echo "✅ Release complete! GitHub Actions will create the release."
+	@echo "Version: $$(node -p "require('./package.json').version")"
