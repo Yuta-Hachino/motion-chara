@@ -80,20 +80,16 @@ cd ..
 # 2. アプリの依存関係インストール（パッケージを含む）
 npm install
 
-# 3. 環境変数設定
-cp .env.local.example .env.local
-# .env.local を編集して GOOGLE_TTS_API_KEY を設定
-
-# 4. 開発サーバー起動
+# 3. 開発サーバー起動
 npm run dev
 
-# 5. ブラウザで開く
+# 4. ブラウザで開く
 open http://localhost:3000
 ```
 
-**重要**: `.env.local` には機密情報が含まれるため、Gitにコミットしないでください。
-
-**注意**: サンプルアプリはローカルパッケージ (`file:./react-live2d-lipsync`) を参照しています。
+**注意**:
+- サンプルアプリはローカルパッケージ (`file:./react-live2d-lipsync`) を参照しています
+- Google TTS APIキーはUI上で入力できます（環境変数の設定は不要）
 
 ## 📚 ドキュメント
 
@@ -109,8 +105,7 @@ open http://localhost:3000
 ### サンプルアプリドキュメント
 
 - [README_APP](./docs/README_APP.md) - アプリの詳細説明
-- [GOOGLE_TTS_SETUP](./docs/GOOGLE_TTS_SETUP.md) - Google TTS API設定
-- [DEPLOYMENT](./docs/DEPLOYMENT.md) - GCP Cloud Runへのデプロイ
+- [GitHub Pages デモ](https://yuta-hachino.github.io/react-live2d-lipsync/) - オンラインデモ
 
 ## 🎯 使用例
 
@@ -181,7 +176,9 @@ npm run dev
 
 ## 🌐 デプロイ
 
-### パッケージリリース（GitHub）
+### NPMパッケージの公開
+
+GitHubタグをプッシュすると、自動的にNPMに公開されます:
 
 ```bash
 cd react-live2d-lipsync
@@ -189,27 +186,22 @@ cd react-live2d-lipsync
 # ビルド + コミット + プッシュ
 make release-github
 
-# タグ作成
+# タグ作成してプッシュ
 make release-tag TAG=v1.0.0
-
-# プッシュ
 make release-push
 ```
 
-### サンプルアプリデプロイ（GCP Cloud Run）
+GitHub Actionsが自動的にパッケージをNPMに公開します。
+
+### サンプルアプリのデプロイ（GitHub Pages）
+
+`main` ブランチにプッシュすると、自動的にGitHub Pagesにデプロイされます:
 
 ```bash
-# 1. デプロイ用環境変数を設定
-cp .env.deploy.example .env.deploy
-# .env.deploy を編集して実際の値を設定
-
-# 2. デプロイ実行
-./scripts/deploy.sh
+git push origin main
 ```
 
-詳細: [DEPLOYMENT.md](./docs/DEPLOYMENT.md)
-
-**セキュリティ**: `.env.deploy` には機密情報が含まれるため、Gitにコミットしないでください。
+デモサイト: https://yuta-hachino.github.io/react-live2d-lipsync/
 
 ## 📋 必要要件
 

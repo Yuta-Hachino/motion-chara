@@ -1,45 +1,46 @@
 # Live2D リップシンク & まばたきアプリ
 
-Google Text-to-Speech または日本語テキスト入力を使用して、Live2D モデルをリアルタイムでリップシンク＋まばたきさせる Web アプリケーションです。
+Live2D モデルをリアルタイムでリップシンク＋まばたきさせる Web アプリケーションです。
+
+## 🌐 オンラインデモ
+
+**GitHub Pages**: https://yuta-hachino.github.io/react-live2d-lipsync/
+
+オンラインデモでは、Google TTS APIキーをUI上で入力して使用できます。
 
 ## 機能
 
-- **テキスト入力**: 日本語テキストを入力し、Google TTS で音声を生成
+- **テキスト読み上げ**: 日本語テキストを入力し、Google TTS で音声を生成
 - **音声ファイル対応**: MP3/WAV/OGG などの音声ファイルをアップロード
 - **リアルタイムリップシンク**: Web Audio API で音量を解析し、Live2D モデルの口を動かす
 - **自動まばたき**: 2〜6秒間隔でランダムにまばたき（100-120ms持続）
 - **Live2D Cubism SDK**: pixi-live2d-display を使用した本格的なキャラクターアニメーション
-- **Docker 対応**: コンテナ化された環境で簡単にデプロイ可能
+- **GitHub Pages対応**: 静的サイトとして公開可能
 
 ## 技術スタック
 
 - **フロントエンド**: Next.js 14 (App Router) + TypeScript + Tailwind CSS
 - **Live2D**: pixi-live2d-display v0.4.0 + Pixi.js v7.4.2
 - **音声解析**: Web Audio API (AnalyserNode)
-- **TTS**: Google Cloud Text-to-Speech API
-- **コンテナ**: Docker + Docker Compose
+- **TTS**: Google Cloud Text-to-Speech API（クライアントサイドから直接呼び出し）
+- **デプロイ**: GitHub Actions + GitHub Pages
 
 ## セットアップ
 
 ### 前提条件
 
-- Node.js 20以上
-- Docker & Docker Compose（オプション）
-- Google Cloud Text-to-Speech API キー
-
-### 環境変数の設定
-
-プロジェクトルートに `.env.local` ファイルを作成:
-
-```bash
-GOOGLE_TTS_API_KEY=your_api_key_here
-```
+- Node.js 18以上
+- Google Cloud Text-to-Speech API キー（オプション、音声ファイルのみ使う場合は不要）
 
 ### インストール & 実行
 
-#### ローカル環境
-
 ```bash
+# react-live2d-lipsyncパッケージをビルド
+cd react-live2d-lipsync
+npm install
+npm run build
+cd ..
+
 # 依存関係のインストール
 npm install
 
@@ -48,6 +49,8 @@ npm run dev
 ```
 
 ブラウザで http://localhost:3000 を開く
+
+**注意**: APIキーは環境変数ではなく、UI上で入力します。
 
 #### Docker環境
 

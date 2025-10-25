@@ -17,6 +17,8 @@ export default function Home() {
   const [modelPath, setModelPath] = useState("/live2d/lan/lan.model3.json");
   const [positionY, setPositionY] = useState(-0.3);
   const [modelScale, setModelScale] = useState(1.0);
+  const [apiKey, setApiKey] = useState("");
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -31,18 +33,40 @@ export default function Home() {
       return;
     }
 
+    if (!apiKey.trim()) {
+      setError("Google TTS API キーを入力してください");
+      setShowApiKeyInput(true);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("/api/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
+      const response = await fetch(
+        `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            input: { text },
+            voice: {
+              languageCode: "ja-JP",
+              name: "ja-JP-Neural2-B",
+              ssmlGender: "FEMALE",
+            },
+            audioConfig: {
+              audioEncoding: "MP3",
+              speakingRate: 1.0,
+              pitch: 0.0,
+            },
+          }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("TTS API request failed");
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || "TTS API request failed");
       }
 
       const { audioContent } = await response.json();
@@ -109,6 +133,52 @@ export default function Home() {
 
           {/* Control Panel */}
           <div className="space-y-6">
+            {/* API Key Input Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  API設定
+                </h2>
+                <button
+                  onClick={() => setShowApiKeyInput(!showApiKeyInput)}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
+                  {showApiKeyInput ? "非表示" : "表示"}
+                </button>
+              </div>
+              {showApiKeyInput && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Google TTS API キー
+                  </label>
+                  <input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="AIzaSy..."
+                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+                  />
+                  <p className="mt-2 text-xs text-gray-600">
+                    APIキーは{" "}
+                    <a
+                      href="https://console.cloud.google.com/apis/credentials"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      Google Cloud Console
+                    </a>{" "}
+                    から取得できます。ブラウザに保存されず、安全です。
+                  </p>
+                </div>
+              )}
+              {!showApiKeyInput && !apiKey && (
+                <p className="text-sm text-orange-600">
+                  テキスト読み上げ機能を使用するには、APIキーを設定してください
+                </p>
+              )}
+            </div>
+
             {/* Text Input Section */}
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-semibold mb-4 text-gray-800">
@@ -240,10 +310,21 @@ export default function Home() {
         <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">使い方</h2>
           <ol className="list-decimal list-inside space-y-2 text-gray-700">
-            <li>テキストを入力して「音声を生成して再生」ボタンをクリック</li>
-            <li>または音声ファイルをアップロードして再生</li>
+            <li>
+              <strong>テキスト読み上げを使う場合:</strong>
+              <ul className="list-disc list-inside ml-6 mt-1 space-y-1 text-sm">
+                <li>API設定からGoogle TTS APIキーを入力</li>
+                <li>テキストを入力して「音声を生成して再生」ボタンをクリック</li>
+              </ul>
+            </li>
+            <li>
+              <strong>音声ファイルを使う場合:</strong>
+              <ul className="list-disc list-inside ml-6 mt-1 space-y-1 text-sm">
+                <li>音声ファイルをアップロードして再生（APIキー不要）</li>
+              </ul>
+            </li>
             <li>Live2Dモデルが音声に合わせてリップシンクとまばたきを行います</li>
-            <li>環境変数にGOOGLE_TTS_API_KEYを設定してください</li>
+            <li>モデルの位置やサイズは調整可能です</li>
           </ol>
         </div>
 
