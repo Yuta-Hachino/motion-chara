@@ -135,13 +135,15 @@ const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelErr
                 // Load Live2D model
                 const model = await Live2DModel.from(modelPath);
                 modelRef.current = model;
-                // Scale and position model
-                const scaleX = (app.screen.width * 0.8) / model.width;
-                const scaleY = (app.screen.height * 0.8) / model.height;
+                // Scale and position model - use width/height directly instead of app.screen
+                const screenWidth = app.screen?.width || width;
+                const screenHeight = app.screen?.height || height;
+                const scaleX = (screenWidth * 0.8) / model.width;
+                const scaleY = (screenHeight * 0.8) / model.height;
                 const baseScale = Math.min(scaleX, scaleY);
                 model.scale.set(baseScale * scale);
-                model.x = app.screen.width / 2 + (positionX * app.screen.width / 2);
-                model.y = app.screen.height / 2 + (positionY * app.screen.height / 2);
+                model.x = screenWidth / 2 + (positionX * screenWidth / 2);
+                model.y = screenHeight / 2 + (positionY * screenHeight / 2);
                 model.anchor.set(0.5, 0.5);
                 app.stage.addChild(model);
                 // Initialize parameters

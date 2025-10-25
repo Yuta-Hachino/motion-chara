@@ -1,6 +1,6 @@
 {
   "name": "react-live2d-lipsync",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React component for Live2D character with lip-sync and blinking animations",
   "main": "react-live2d-lipsync/dist/index.js",
   "module": "react-live2d-lipsync/dist/index.esm.js",
