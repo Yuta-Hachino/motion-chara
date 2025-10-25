@@ -67,7 +67,7 @@ export default function AdvancedExample() {
           scale={scale}
           width={640}
           height={960}
-          backgroundColor={0xffffff}
+          backgroundColor={0}
           enableBlinking={true}
           blinkInterval={[2000, 5000]}
           lipSyncSensitivity={1.5}
