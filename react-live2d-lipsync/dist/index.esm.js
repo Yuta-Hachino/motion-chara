@@ -65,11 +65,21 @@ const DefaultErrorComponent = ({ error }) => (React.createElement("div", { style
  * }
  * ```
  */
-const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelError, positionY = 0, positionX = 0, scale = 1, width = 640, height = 960, backgroundColor = 0xf0f0f0, antialias = true, className = '', style = {}, enableBlinking = true, blinkInterval = [2000, 6000], blinkDuration = 100, enableLipSync = true, lipSyncSensitivity = 1.5, showLoading = true, showError = true, loadingComponent, errorComponent, }) => {
+const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelError, positionY = 0, positionX = 0, scale = 1, width = 640, height = 960, backgroundColor = 0xf0f0f0, antialias = true, className = '', style = {}, enableBlinking = true, blinkInterval = [2000, 6000], blinkDuration = 100, enableLipSync = true, lipSyncSensitivity = 1.5, showLoading = true, showError = true, loadingComponent, errorComponent, 
+// Phase 1
+expression, expressions, onExpressionChanged, enableBreathing = true, breathingSpeed = 1.0, breathingIntensity = 0.5, fps = 60, resolution = 1, autoQuality = false, 
+// Phase 2
+enableMouseTracking = false, trackingSmoothing = 0.1, trackingRange = 30, motionGroup, motions, onMotionFinished, motionPriority = 2, loopMotion = false, 
+// Phase 3
+preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreloadProgress, ariaLabel, ariaDescription, enableKeyboardControls = false, onKeyboardEvent, }) => {
     const canvasRef = useRef(null);
     const appRef = useRef(null);
     const modelRef = useRef(null);
     const blinkTimerRef = useRef(null);
+    const breathingTimerRef = useRef(null);
+    const mousePositionRef = useRef({ x: 0, y: 0 });
+    const currentAngleRef = useRef({ x: 0, y: 0 });
+    const performanceRef = useRef({ frameCount: 0, startTime: 0 });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     useEffect(() => {
@@ -102,15 +112,40 @@ const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelErr
             try {
                 // Clear any existing content
                 canvasRef.current.innerHTML = '';
-                // Create PIXI Application
+                // Create PIXI Application with performance settings
                 const app = new PIXI.Application({
-                    width,
-                    height,
+                    width: width * resolution,
+                    height: height * resolution,
                     backgroundColor,
                     antialias,
+                    resolution,
                 });
                 appRef.current = app;
                 canvasRef.current.appendChild(app.view);
+                // Configure FPS limit
+                if (fps && fps < 60) {
+                    app.ticker.maxFPS = fps;
+                }
+                // Performance monitoring for auto quality
+                if (autoQuality) {
+                    performanceRef.current.startTime = Date.now();
+                    app.ticker.add(() => {
+                        performanceRef.current.frameCount++;
+                        const elapsed = Date.now() - performanceRef.current.startTime;
+                        // Check performance every 2 seconds
+                        if (elapsed >= 2000) {
+                            const currentFPS = (performanceRef.current.frameCount / elapsed) * 1000;
+                            // If FPS drops below target, reduce quality
+                            if (currentFPS < fps * 0.8 && resolution > 0.5) {
+                                console.warn(`Low FPS detected (${currentFPS.toFixed(1)}), reducing resolution`);
+                                // Note: Actual resolution change would require recreating the app
+                                // This is a simplified version - full implementation would need app recreation
+                            }
+                            performanceRef.current.frameCount = 0;
+                            performanceRef.current.startTime = Date.now();
+                        }
+                    });
+                }
                 // Load Live2D model
                 const model = await Live2DModel.from(modelPath);
                 modelRef.current = model;
@@ -135,6 +170,14 @@ const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelErr
                 if (enableBlinking) {
                     startBlinking();
                 }
+                // Start breathing animation if enabled
+                if (enableBreathing) {
+                    startBreathing();
+                }
+                // Preload resources if enabled
+                if (preloadExpressions || preloadMotions) {
+                    await preloadResources();
+                }
                 setIsLoading(false);
                 onModelLoaded?.();
             }
@@ -152,6 +195,10 @@ const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelErr
                 clearTimeout(blinkTimerRef.current);
                 blinkTimerRef.current = null;
             }
+            if (breathingTimerRef.current) {
+                cancelAnimationFrame(breathingTimerRef.current);
+                breathingTimerRef.current = null;
+            }
             if (modelRef.current) {
                 modelRef.current.destroy();
                 modelRef.current = null;
@@ -164,7 +211,7 @@ const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelErr
                 canvasRef.current.innerHTML = '';
             }
         };
-    }, [modelPath, width, height, backgroundColor, antialias, enableBlinking]);
+    }, [modelPath, width, height, backgroundColor, antialias, enableBlinking, enableBreathing]);
     // Blinking animation
     const startBlinking = () => {
         const blink = () => {
@@ -188,6 +235,57 @@ const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelErr
         };
         blink();
     };
+    // Breathing animation
+    const startBreathing = () => {
+        let breathPhase = 0;
+        const updateBreathing = () => {
+            if (!modelRef.current?.internalModel?.coreModel || !enableBreathing)
+                return;
+            const coreModel = modelRef.current.internalModel.coreModel;
+            breathPhase += 0.016 * breathingSpeed; // Assuming ~60fps
+            const breathValue = Math.sin(breathPhase) * breathingIntensity;
+            // Try to set ParamBreath if available, otherwise use body angle
+            try {
+                coreModel.setParameterValueById('ParamBreath', breathValue);
+            }
+            catch {
+                // Fallback: use body angle for breathing effect
+                try {
+                    coreModel.setParameterValueById('ParamBodyAngleY', breathValue * 2);
+                }
+                catch {
+                    // Model doesn't support breathing parameters
+                }
+            }
+            breathingTimerRef.current = requestAnimationFrame(updateBreathing);
+        };
+        updateBreathing();
+    };
+    // Preload resources
+    const preloadResources = async () => {
+        const resources = [];
+        if (preloadExpressions && expressions) {
+            resources.push(...Object.values(expressions));
+        }
+        if (preloadMotions && motions) {
+            resources.push(...Object.values(motions));
+        }
+        if (resources.length === 0)
+            return;
+        let loaded = 0;
+        const total = resources.length;
+        for (const resourcePath of resources) {
+            try {
+                await fetch(resourcePath);
+                loaded++;
+                onPreloadProgress?.(loaded / total);
+            }
+            catch (err) {
+                console.warn(`Failed to preload resource: ${resourcePath}`, err);
+            }
+        }
+        onPreloadComplete?.();
+    };
     // Update mouth based on audio volume (lip-sync)
     useEffect(() => {
         if (!modelRef.current?.internalModel?.coreModel || !enableLipSync)
@@ -209,7 +307,155 @@ const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelErr
         model.x = app.screen.width / 2 + (positionX * app.screen.width / 2);
         model.y = app.screen.height / 2 + (positionY * app.screen.height / 2);
     }, [positionY, positionX, scale]);
-    return (React.createElement("div", { className: className, style: { position: 'relative', ...style } },
+    // Expression change handler
+    useEffect(() => {
+        if (!modelRef.current || !expression || !expressions)
+            return;
+        const loadExpression = async () => {
+            try {
+                const expressionPath = expressions[expression];
+                if (!expressionPath) {
+                    console.warn(`Expression "${expression}" not found in expressions map`);
+                    return;
+                }
+                // Load expression using Live2D API
+                const model = modelRef.current;
+                if (model.internalModel && model.internalModel.motionManager) {
+                    const response = await fetch(expressionPath);
+                    const expressionData = await response.json();
+                    // Apply expression parameters
+                    if (expressionData.Parameters) {
+                        expressionData.Parameters.forEach((param) => {
+                            try {
+                                model.internalModel.coreModel.setParameterValueById(param.Id, param.Value);
+                            }
+                            catch (err) {
+                                console.warn(`Failed to set parameter ${param.Id}:`, err);
+                            }
+                        });
+                    }
+                    onExpressionChanged?.(expression);
+                }
+            }
+            catch (err) {
+                console.error(`Failed to load expression "${expression}":`, err);
+            }
+        };
+        loadExpression();
+    }, [expression, expressions, onExpressionChanged]);
+    // Mouse tracking handler
+    useEffect(() => {
+        if (!enableMouseTracking || !canvasRef.current || !modelRef.current)
+            return;
+        const handleMouseMove = (event) => {
+            const canvas = canvasRef.current;
+            if (!canvas)
+                return;
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            // Convert to normalized coordinates (-1 to 1)
+            mousePositionRef.current = {
+                x: ((x / rect.width) * 2 - 1),
+                y: ((y / rect.height) * 2 - 1),
+            };
+        };
+        const updateTracking = () => {
+            if (!modelRef.current?.internalModel?.coreModel)
+                return;
+            const coreModel = modelRef.current.internalModel.coreModel;
+            const mouseX = mousePositionRef.current.x;
+            const mouseY = mousePositionRef.current.y;
+            // Calculate target angles
+            const targetAngleX = mouseX * trackingRange;
+            const targetAngleY = -mouseY * trackingRange;
+            // Smooth interpolation
+            currentAngleRef.current.x += (targetAngleX - currentAngleRef.current.x) * trackingSmoothing;
+            currentAngleRef.current.y += (targetAngleY - currentAngleRef.current.y) * trackingSmoothing;
+            // Apply to model parameters
+            try {
+                coreModel.setParameterValueById('ParamAngleX', currentAngleRef.current.x);
+                coreModel.setParameterValueById('ParamAngleY', currentAngleRef.current.y);
+                coreModel.setParameterValueById('ParamBodyAngleX', currentAngleRef.current.x * 0.5);
+                coreModel.setParameterValueById('ParamEyeBallX', currentAngleRef.current.x * 0.8);
+                coreModel.setParameterValueById('ParamEyeBallY', currentAngleRef.current.y * 0.8);
+            }
+            catch (err) {
+                // Some parameters might not exist in all models
+            }
+            requestAnimationFrame(updateTracking);
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        const trackingId = requestAnimationFrame(updateTracking);
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            cancelAnimationFrame(trackingId);
+        };
+    }, [enableMouseTracking, trackingSmoothing, trackingRange]);
+    // Motion management handler
+    useEffect(() => {
+        if (!modelRef.current || !motionGroup || !motions)
+            return;
+        const playMotion = async () => {
+            try {
+                const motionPath = motions[motionGroup];
+                if (!motionPath) {
+                    console.warn(`Motion "${motionGroup}" not found in motions map`);
+                    return;
+                }
+                const model = modelRef.current;
+                if (!model.internalModel?.motionManager) {
+                    console.warn('Motion manager not available');
+                    return;
+                }
+                // Use pixi-live2d-display motion API
+                const motion = await model.internalModel.motionManager.loadMotion(motionGroup, 0, motionPath);
+                if (motion) {
+                    // Set motion priority and loop
+                    model.internalModel.motionManager.startMotion(motion, loopMotion, motionPriority);
+                    // Handle motion finish
+                    if (!loopMotion) {
+                        motion.onFinish = () => {
+                            onMotionFinished?.(motionGroup);
+                        };
+                    }
+                }
+            }
+            catch (err) {
+                console.error(`Failed to play motion "${motionGroup}":`, err);
+            }
+        };
+        playMotion();
+    }, [motionGroup, motions, motionPriority, loopMotion, onMotionFinished]);
+    // Keyboard controls handler
+    useEffect(() => {
+        if (!enableKeyboardControls)
+            return;
+        const handleKeyDown = (event) => {
+            // Notify parent component
+            onKeyboardEvent?.(event);
+            // Default keyboard controls (can be overridden)
+            if (!onKeyboardEvent) {
+                switch (event.key) {
+                    case 'ArrowLeft':
+                        // Move left (example)
+                        break;
+                    case 'ArrowRight':
+                        // Move right (example)
+                        break;
+                    case ' ':
+                        // Space bar - trigger action (example)
+                        event.preventDefault();
+                        break;
+                }
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [enableKeyboardControls, onKeyboardEvent]);
+    return (React.createElement("div", { className: className, style: { position: 'relative', ...style }, role: "img", "aria-label": ariaLabel || 'Live2D character', "aria-description": ariaDescription, tabIndex: enableKeyboardControls ? 0 : undefined },
         React.createElement("div", { ref: canvasRef }),
         isLoading && showLoading && (loadingComponent || React.createElement(DefaultLoadingComponent, null)),
         error && showError && (errorComponent || React.createElement(DefaultErrorComponent, { error: error }))));

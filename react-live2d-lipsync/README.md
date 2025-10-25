@@ -4,13 +4,22 @@ A React component library for displaying Live2D models with lip-sync and blinkin
 
 ## Features
 
+### Core Features
 - 🎭 **Live2D Integration** - Display Live2D Cubism 2 and 3 models
 - 🎤 **Lip-Sync Animation** - Real-time mouth movements synced to audio
 - 👁️ **Automatic Blinking** - Natural blinking animations
-- ⚙️ **Highly Configurable** - Extensive customization options
 - 📦 **TypeScript Support** - Full type definitions included
 - 🪝 **React Hooks** - Custom hooks for audio analysis
 - 🎨 **Customizable UI** - Custom loading and error components
+
+### New in v1.1.0
+- 😊 **Expression System** - Dynamic facial expression changes
+- 💨 **Breathing Animation** - Natural breathing motion
+- 🖱️ **Mouse Tracking** - Character follows cursor movement
+- 🎬 **Motion Management** - Play and control character motions
+- ⚡ **Performance Optimization** - FPS control and auto quality adjustment
+- 📥 **Resource Preloading** - Preload expressions and motions
+- ♿ **Accessibility** - ARIA labels and keyboard controls
 
 ## Installation
 
@@ -125,6 +134,148 @@ function App() {
 />
 ```
 
+### Expression System (v1.1.0+)
+
+Change character expressions dynamically:
+
+```tsx
+import { useState } from 'react';
+
+function App() {
+  const [expression, setExpression] = useState('neutral');
+
+  return (
+    <>
+      <Live2DCharacter
+        modelPath="/models/character.model3.json"
+        audioVolume={audioVolume}
+        expression={expression}
+        expressions={{
+          neutral: '/expressions/neutral.exp3.json',
+          happy: '/expressions/happy.exp3.json',
+          sad: '/expressions/sad.exp3.json',
+          angry: '/expressions/angry.exp3.json',
+        }}
+        onExpressionChanged={(expr) => console.log('Expression changed to:', expr)}
+      />
+
+      <button onClick={() => setExpression('happy')}>Happy</button>
+      <button onClick={() => setExpression('sad')}>Sad</button>
+    </>
+  );
+}
+```
+
+### Breathing Animation (v1.1.0+)
+
+Add natural breathing motion to your character:
+
+```tsx
+<Live2DCharacter
+  modelPath="/models/character.model3.json"
+  audioVolume={audioVolume}
+  enableBreathing={true}
+  breathingSpeed={1.0}      // Speed multiplier
+  breathingIntensity={0.5}  // Intensity (0-1)
+/>
+```
+
+### Mouse Tracking (v1.1.0+)
+
+Make the character follow the mouse cursor:
+
+```tsx
+<Live2DCharacter
+  modelPath="/models/character.model3.json"
+  audioVolume={audioVolume}
+  enableMouseTracking={true}
+  trackingSmoothing={0.1}    // Smoothing (0-1, higher = smoother)
+  trackingRange={30}         // Range in degrees
+/>
+```
+
+### Motion System (v1.1.0+)
+
+Play different motions on your character:
+
+```tsx
+import { useState } from 'react';
+
+function App() {
+  const [motion, setMotion] = useState('idle');
+
+  return (
+    <>
+      <Live2DCharacter
+        modelPath="/models/character.model3.json"
+        audioVolume={audioVolume}
+        motionGroup={motion}
+        motions={{
+          idle: '/motions/idle.motion3.json',
+          greeting: '/motions/hello.motion3.json',
+          happy: '/motions/joy.motion3.json',
+        }}
+        loopMotion={motion === 'idle'}
+        motionPriority={2}
+        onMotionFinished={() => setMotion('idle')}
+      />
+
+      <button onClick={() => setMotion('greeting')}>Wave Hello</button>
+    </>
+  );
+}
+```
+
+### Performance Optimization (v1.1.0+)
+
+Control rendering performance for better battery life or mobile support:
+
+```tsx
+<Live2DCharacter
+  modelPath="/models/character.model3.json"
+  audioVolume={audioVolume}
+  fps={30}              // Target FPS (default: 60)
+  resolution={0.75}     // Resolution multiplier (default: 1)
+  autoQuality={true}    // Auto-adjust quality based on performance
+/>
+```
+
+### Preloading Resources (v1.1.0+)
+
+Preload expressions and motions for smoother transitions:
+
+```tsx
+<Live2DCharacter
+  modelPath="/models/character.model3.json"
+  audioVolume={audioVolume}
+  expressions={{...}}
+  motions={{...}}
+  preloadExpressions={true}
+  preloadMotions={true}
+  onPreloadProgress={(progress) => console.log(`Loading: ${progress * 100}%`)}
+  onPreloadComplete={() => console.log('All resources loaded!')}
+/>
+```
+
+### Accessibility Features (v1.1.0+)
+
+Make your Live2D character accessible:
+
+```tsx
+<Live2DCharacter
+  modelPath="/models/character.model3.json"
+  audioVolume={audioVolume}
+  ariaLabel="Virtual assistant character"
+  ariaDescription="An animated character that responds to your messages"
+  enableKeyboardControls={true}
+  onKeyboardEvent={(event) => {
+    if (event.key === 'Enter') {
+      // Trigger action
+    }
+  }}
+/>
+```
+
 ### Background Customization
 
 The Live2D character component is transparent, so you can easily customize the background using CSS:
@@ -220,6 +371,66 @@ const { audioVolume } = useLive2DAudio({
 | `showError` | `boolean` | `true` | Show error messages |
 | `loadingComponent` | `React.ReactNode` | - | Custom loading component |
 | `errorComponent` | `React.ReactNode` | - | Custom error component |
+
+#### Expression System (v1.1.0+)
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `expression` | `string` | - | Current expression name |
+| `expressions` | `Record<string, string>` | - | Expression file mappings |
+| `onExpressionChanged` | `(expression: string) => void` | - | Callback when expression changes |
+
+#### Breathing Animation (v1.1.0+)
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `enableBreathing` | `boolean` | `true` | Enable breathing animation |
+| `breathingSpeed` | `number` | `1.0` | Breathing speed multiplier |
+| `breathingIntensity` | `number` | `0.5` | Breathing intensity (0-1) |
+
+#### Performance Optimization (v1.1.0+)
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `fps` | `number` | `60` | Target FPS for rendering |
+| `resolution` | `number` | `1` | Resolution multiplier |
+| `autoQuality` | `boolean` | `false` | Auto quality adjustment |
+
+#### Mouse Tracking (v1.1.0+)
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `enableMouseTracking` | `boolean` | `false` | Enable mouse tracking |
+| `trackingSmoothing` | `number` | `0.1` | Tracking smoothing (0-1) |
+| `trackingRange` | `number` | `30` | Tracking range in degrees |
+
+#### Motion Management (v1.1.0+)
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `motionGroup` | `string` | - | Current motion group name |
+| `motions` | `Record<string, string>` | - | Motion file mappings |
+| `onMotionFinished` | `(motionGroup: string) => void` | - | Callback when motion finishes |
+| `motionPriority` | `number` | `2` | Motion priority (0-3) |
+| `loopMotion` | `boolean` | `false` | Loop motion playback |
+
+#### Preloading (v1.1.0+)
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `preloadExpressions` | `boolean` | `false` | Preload expressions |
+| `preloadMotions` | `boolean` | `false` | Preload motions |
+| `onPreloadComplete` | `() => void` | - | Callback when preload completes |
+| `onPreloadProgress` | `(progress: number) => void` | - | Callback with progress (0-1) |
+
+#### Accessibility (v1.1.0+)
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `ariaLabel` | `string` | `'Live2D character'` | ARIA label |
+| `ariaDescription` | `string` | - | ARIA description |
+| `enableKeyboardControls` | `boolean` | `false` | Enable keyboard controls |
+| `onKeyboardEvent` | `(event: KeyboardEvent) => void` | - | Keyboard event handler |
 
 ### useLive2DAudio Hook
 

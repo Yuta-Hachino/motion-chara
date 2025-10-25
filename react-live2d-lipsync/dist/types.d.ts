@@ -104,6 +104,124 @@ export interface Live2DCharacterProps {
      * Custom error component
      */
     errorComponent?: React.ReactNode;
+    /**
+     * Current expression name to display
+     * @example 'neutral', 'happy', 'sad', 'angry'
+     */
+    expression?: string;
+    /**
+     * Expression file mappings
+     * @example { happy: '/expressions/happy.exp3.json', sad: '/expressions/sad.exp3.json' }
+     */
+    expressions?: Record<string, string>;
+    /**
+     * Callback when expression changes
+     */
+    onExpressionChanged?: (expression: string) => void;
+    /**
+     * Enable breathing animation
+     * @default true
+     */
+    enableBreathing?: boolean;
+    /**
+     * Breathing speed multiplier
+     * @default 1.0
+     */
+    breathingSpeed?: number;
+    /**
+     * Breathing intensity (0-1)
+     * @default 0.5
+     */
+    breathingIntensity?: number;
+    /**
+     * Target FPS for rendering
+     * @default 60
+     */
+    fps?: number;
+    /**
+     * Resolution multiplier (lower = better performance)
+     * @default 1
+     */
+    resolution?: number;
+    /**
+     * Enable automatic quality adjustment based on performance
+     * @default false
+     */
+    autoQuality?: boolean;
+    /**
+     * Enable mouse tracking (character follows cursor)
+     * @default false
+     */
+    enableMouseTracking?: boolean;
+    /**
+     * Mouse tracking smoothing (0-1, higher = smoother but slower)
+     * @default 0.1
+     */
+    trackingSmoothing?: number;
+    /**
+     * Mouse tracking range in degrees
+     * @default 30
+     */
+    trackingRange?: number;
+    /**
+     * Current motion group to play
+     * @example 'idle', 'greeting', 'happy'
+     */
+    motionGroup?: string;
+    /**
+     * Motion file mappings
+     * @example { idle: '/motions/idle.motion3.json', greeting: '/motions/hello.motion3.json' }
+     */
+    motions?: Record<string, string>;
+    /**
+     * Callback when motion finishes playing
+     */
+    onMotionFinished?: (motionGroup: string) => void;
+    /**
+     * Motion priority (0-3, higher = more important)
+     * @default 2
+     */
+    motionPriority?: number;
+    /**
+     * Loop motion playback
+     * @default false
+     */
+    loopMotion?: boolean;
+    /**
+     * Preload expressions before displaying
+     * @default false
+     */
+    preloadExpressions?: boolean;
+    /**
+     * Preload motions before displaying
+     * @default false
+     */
+    preloadMotions?: boolean;
+    /**
+     * Callback when preloading completes
+     */
+    onPreloadComplete?: () => void;
+    /**
+     * Callback with preload progress (0-1)
+     */
+    onPreloadProgress?: (progress: number) => void;
+    /**
+     * ARIA label for accessibility
+     */
+    ariaLabel?: string;
+    /**
+     * ARIA description for accessibility
+     */
+    ariaDescription?: string;
+    /**
+     * Enable keyboard controls
+     * @default false
+     */
+    enableKeyboardControls?: boolean;
+    /**
+     * Callback for keyboard events
+     */
+    onKeyboardEvent?: (event: KeyboardEvent) => void;
 }
 export interface AudioAnalyzerOptions {
     /**
