@@ -1,18 +1,30 @@
 {
-  "name": "live2d-lipsync",
+  "name": "react-live2d-lipsync",
   "version": "1.0.0",
-  "private": true,
+  "description": "React component for Live2D character with lip-sync and blinking animations",
+  "main": "react-live2d-lipsync/dist/index.js",
+  "module": "react-live2d-lipsync/dist/index.esm.js",
+  "types": "react-live2d-lipsync/dist/index.d.ts",
+  "files": [
+    "react-live2d-lipsync/dist",
+    "react-live2d-lipsync/package.json",
+    "react-live2d-lipsync/README.md"
+  ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "cd react-live2d-lipsync && npm run build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "cd react-live2d-lipsync && npm install && npm run build"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "dependencies": {
     "next": "14.2.18",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-live2d-lipsync": "file:./react-live2d-lipsync"
+    "pixi-live2d-display": "^0.4.0",
+    "pixi.js": "^6.5.10"
   },
   "devDependencies": {
     "@types/node": "^20",
