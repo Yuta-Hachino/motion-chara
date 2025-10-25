@@ -320,14 +320,16 @@ preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreload
             return;
         const app = appRef.current;
         const model = modelRef.current;
-        // Recalculate scale
-        const scaleX = (app.screen.width * 0.8) / model.width;
-        const scaleY = (app.screen.height * 0.8) / model.height;
+        // Recalculate scale - use width/height directly instead of app.screen
+        const screenWidth = app.screen?.width || width;
+        const screenHeight = app.screen?.height || height;
+        const scaleX = (screenWidth * 0.8) / model.width;
+        const scaleY = (screenHeight * 0.8) / model.height;
         const baseScale = Math.min(scaleX, scaleY);
         model.scale.set(baseScale * scale);
-        model.x = app.screen.width / 2 + (positionX * app.screen.width / 2);
-        model.y = app.screen.height / 2 + (positionY * app.screen.height / 2);
-    }, [positionY, positionX, scale]);
+        model.x = screenWidth / 2 + (positionX * screenWidth / 2);
+        model.y = screenHeight / 2 + (positionY * screenHeight / 2);
+    }, [positionY, positionX, scale, width, height]);
     // Expression change handler
     React.useEffect(() => {
         if (!modelRef.current || !expression || !expressions)
