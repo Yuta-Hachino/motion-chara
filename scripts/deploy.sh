@@ -4,10 +4,42 @@
 
 set -e
 
+# .env.deploy ファイルがあれば読み込む
+if [ -f .env.deploy ]; then
+  echo "📄 .env.deploy から環境変数を読み込みます..."
+  export $(cat .env.deploy | grep -v '^#' | grep -v '^$' | xargs)
+fi
+
+# 環境変数のチェック
+if [ -z "$PROJECT_ID" ]; then
+  echo "❌ エラー: PROJECT_ID 環境変数が設定されていません"
+  echo ""
+  echo "設定方法:"
+  echo "1. .env.deploy ファイルを作成（推奨）:"
+  echo "   cp .env.deploy.example .env.deploy"
+  echo "   # .env.deploy を編集して実際の値を設定"
+  echo ""
+  echo "2. または環境変数を直接設定:"
+  echo "   export PROJECT_ID=\"your-gcp-project-id\""
+  exit 1
+fi
+
+if [ -z "$GOOGLE_TTS_API_KEY" ]; then
+  echo "❌ エラー: GOOGLE_TTS_API_KEY 環境変数が設定されていません"
+  echo ""
+  echo "設定方法:"
+  echo "1. .env.deploy ファイルを作成（推奨）:"
+  echo "   cp .env.deploy.example .env.deploy"
+  echo "   # .env.deploy を編集して実際の値を設定"
+  echo ""
+  echo "2. または環境変数を直接設定:"
+  echo "   export GOOGLE_TTS_API_KEY=\"your-api-key\""
+  exit 1
+fi
+
 # 設定
-PROJECT_ID="gen-lang-client-0830629645"  # GCPプロジェクトIDに置き換えてください
-REGION="asia-northeast1"  # 東京リージョン
-SERVICE_NAME="live2d-lipsync"
+REGION="${REGION:-asia-northeast1}"  # デフォルトは東京リージョン
+SERVICE_NAME="${SERVICE_NAME:-live2d-lipsync}"
 IMAGE_NAME="gcr.io/${PROJECT_ID}/${SERVICE_NAME}"
 
 echo "🚀 Live2D リップシンクアプリをCloud Runにデプロイします"

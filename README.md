@@ -82,7 +82,7 @@ npm install
 
 # 3. 環境変数設定
 cp .env.local.example .env.local
-# GOOGLE_TTS_API_KEY を設定
+# .env.local を編集して GOOGLE_TTS_API_KEY を設定
 
 # 4. 開発サーバー起動
 npm run dev
@@ -90,6 +90,8 @@ npm run dev
 # 5. ブラウザで開く
 open http://localhost:3000
 ```
+
+**重要**: `.env.local` には機密情報が含まれるため、Gitにコミットしないでください。
 
 **注意**: サンプルアプリはローカルパッケージ (`file:./react-live2d-lipsync`) を参照しています。
 
@@ -197,11 +199,17 @@ make release-push
 ### サンプルアプリデプロイ（GCP Cloud Run）
 
 ```bash
-# ルートディレクトリで
+# 1. デプロイ用環境変数を設定
+cp .env.deploy.example .env.deploy
+# .env.deploy を編集して実際の値を設定
+
+# 2. デプロイ実行
 ./scripts/deploy.sh
 ```
 
 詳細: [DEPLOYMENT.md](./docs/DEPLOYMENT.md)
+
+**セキュリティ**: `.env.deploy` には機密情報が含まれるため、Gitにコミットしないでください。
 
 ## 📋 必要要件
 

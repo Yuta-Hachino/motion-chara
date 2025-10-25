@@ -52,10 +52,10 @@ PROJECT_ID="your-gcp-project-id"  # ステップ3で確認したIDに置き換�
 環境変数を設定:
 
 ```bash
-export GOOGLE_TTS_API_KEY="AIzaSyAUo1cvV18sM66Zof3Z1UN79a1j1fOdyXc"
+export GOOGLE_TTS_API_KEY="your-google-tts-api-key"
 ```
 
-または、デプロイスクリプト内で直接設定することもできます。
+**重要**: セキュリティのため、APIキーは環境変数として設定し、スクリプトにハードコードしないでください。
 
 ### 6. デプロイの実行
 

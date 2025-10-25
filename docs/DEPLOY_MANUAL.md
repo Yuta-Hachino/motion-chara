@@ -8,7 +8,7 @@ gcloud CLI がインストールされていない場合の、ブラウザから
 
 https://console.cloud.google.com/
 
-プロジェクト: `gen-lang-client-0830629645` を選択
+あなたのGCPプロジェクトを選択
 
 ### 2. Cloud Shell を開く
 
@@ -45,10 +45,10 @@ cd YOUR_REPO_NAME
 ### 4. 環境変数を設定
 
 ```bash
-export PROJECT_ID="gen-lang-client-0830629645"
+export PROJECT_ID="your-gcp-project-id"
 export REGION="asia-northeast1"
 export SERVICE_NAME="live2d-lipsync"
-export GOOGLE_TTS_API_KEY="AIzaSyAUo1cvV18sM66Zof3Z1UN79a1j1fOdyXc"
+export GOOGLE_TTS_API_KEY="your-google-tts-api-key"
 ```
 
 ### 5. 必要なAPIを有効化
@@ -121,8 +121,8 @@ cd live2d-lipsync
 tar -xzf ../live2d-lipsync.tar.gz
 
 # 環境変数設定
-export PROJECT_ID="gen-lang-client-0830629645"
-export GOOGLE_TTS_API_KEY="AIzaSyAUo1cvV18sM66Zof3Z1UN79a1j1fOdyXc"
+export PROJECT_ID="your-gcp-project-id"
+export GOOGLE_TTS_API_KEY="your-google-tts-api-key"
 
 # デプロイ
 chmod +x scripts/deploy.sh
@@ -142,7 +142,7 @@ on:
       - main
 
 env:
-  PROJECT_ID: gen-lang-client-0830629645
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   SERVICE_NAME: live2d-lipsync
   REGION: asia-northeast1
 
@@ -174,6 +174,7 @@ jobs:
 ```
 
 GitHubリポジトリのSettings → Secrets に以下を追加:
+- `GCP_PROJECT_ID`: GCPプロジェクトID
 - `GCP_SA_KEY`: サービスアカウントキー（JSON）
 - `GOOGLE_TTS_API_KEY`: TTSのAPIキー
 

@@ -4,10 +4,42 @@
 
 set -e
 
-PROJECT_ID="gen-lang-client-0830629645"
-REGION="asia-northeast1"
-SERVICE_NAME="live2d-lipsync"
-GOOGLE_TTS_API_KEY="AIzaSyAUo1cvV18sM66Zof3Z1UN79a1j1fOdyXc"
+# .env.deploy ファイルがあれば読み込む
+if [ -f .env.deploy ]; then
+  echo "📄 .env.deploy から環境変数を読み込みます..."
+  export $(cat .env.deploy | grep -v '^#' | grep -v '^$' | xargs)
+fi
+
+# 環境変数のチェック
+if [ -z "$PROJECT_ID" ]; then
+  echo "❌ エラー: PROJECT_ID 環境変数が設定されていません"
+  echo ""
+  echo "設定方法:"
+  echo "1. .env.deploy ファイルを作成（推奨）:"
+  echo "   cp .env.deploy.example .env.deploy"
+  echo "   # .env.deploy を編集して実際の値を設定"
+  echo ""
+  echo "2. または環境変数を直接設定:"
+  echo "   export PROJECT_ID=\"your-gcp-project-id\""
+  exit 1
+fi
+
+if [ -z "$GOOGLE_TTS_API_KEY" ]; then
+  echo "❌ エラー: GOOGLE_TTS_API_KEY 環境変数が設定されていません"
+  echo ""
+  echo "設定方法:"
+  echo "1. .env.deploy ファイルを作成（推奨）:"
+  echo "   cp .env.deploy.example .env.deploy"
+  echo "   # .env.deploy を編集して実際の値を設定"
+  echo ""
+  echo "2. または環境変数を直接設定:"
+  echo "   export GOOGLE_TTS_API_KEY=\"your-api-key\""
+  exit 1
+fi
+
+# 設定
+REGION="${REGION:-asia-northeast1}"
+SERVICE_NAME="${SERVICE_NAME:-live2d-lipsync}"
 
 echo "🐳 Docker コンテナを使って Cloud Run にデプロイします"
 echo ""
