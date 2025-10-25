@@ -21,6 +21,8 @@ export default function Home() {
   const [modelScale, setModelScale] = useState(1.0);
   const [apiKey, setApiKey] = useState("");
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [backgroundColor, setBackgroundColor] = useState("#f3e5f5");
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -101,6 +103,21 @@ export default function Home() {
     }
   };
 
+  const handleBackgroundImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const imageUrl = URL.createObjectURL(file);
+    setBackgroundImage(imageUrl);
+  };
+
+  const clearBackgroundImage = () => {
+    if (backgroundImage) {
+      URL.revokeObjectURL(backgroundImage);
+    }
+    setBackgroundImage(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 to-purple-100 p-8">
       <div className="max-w-6xl mx-auto">
@@ -119,7 +136,16 @@ export default function Home() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Live2D Model Display */}
-          <div className="flex justify-center">
+          <div
+            className="flex justify-center rounded-lg overflow-hidden shadow-lg"
+            style={{
+              backgroundColor: backgroundImage ? 'transparent' : backgroundColor,
+              backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          >
             <Live2DCharacter
               modelPath={modelPath}
               audioVolume={audioVolume}
@@ -293,6 +319,70 @@ export default function Home() {
                 className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
               >
                 デフォルトに戻す
+              </button>
+            </div>
+
+            {/* Background Settings */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                背景設定
+              </h2>
+
+              {/* Background Color */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  背景色
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={backgroundColor}
+                    onChange={(e) => setBackgroundColor(e.target.value)}
+                    className="h-10 w-20 rounded cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={backgroundColor}
+                    onChange={(e) => setBackgroundColor(e.target.value)}
+                    className="flex-1 p-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+                    placeholder="#f3e5f5"
+                  />
+                </div>
+              </div>
+
+              {/* Background Image Upload */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  背景画像
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBackgroundImageUpload}
+                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+                />
+                {backgroundImage && (
+                  <button
+                    onClick={clearBackgroundImage}
+                    className="mt-2 w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+                  >
+                    背景画像をクリア
+                  </button>
+                )}
+                <p className="mt-2 text-xs text-gray-600">
+                  JPG, PNG, GIFなどの画像ファイルをアップロード
+                </p>
+              </div>
+
+              {/* Reset Background */}
+              <button
+                onClick={() => {
+                  clearBackgroundImage();
+                  setBackgroundColor("#f3e5f5");
+                }}
+                className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+              >
+                背景をリセット
               </button>
             </div>
 
