@@ -1,178 +1,270 @@
-# Live2D リップシンク & まばたきアプリ
+# motion-chara
 
-Google Text-to-Speech または日本語テキスト入力を使用して、Live2D モデルをリアルタイムでリップシンク＋まばたきさせる Web アプリケーションです。
+Live2Dキャラクターをリップシンクとまばたきアニメーション付きで表示するReactコンポーネントライブラリと、そのサンプルアプリケーション。
 
-## 機能
+## 📦 プロジェクト構成
 
-- **テキスト入力**: 日本語テキストを入力し、Google TTS で音声を生成
-- **音声ファイル対応**: MP3/WAV/OGG などの音声ファイルをアップロード
-- **リアルタイムリップシンク**: Web Audio API で音量を解析し、Live2D モデルの口を動かす
-- **自動まばたき**: 2〜6秒間隔でランダムにまばたき（100-120ms持続）
-- **Live2D Cubism SDK**: pixi-live2d-display を使用した本格的なキャラクターアニメーション
-- **Docker 対応**: コンテナ化された環境で簡単にデプロイ可能
+このリポジトリには2つのプロジェクトが含まれています：
 
-## 技術スタック
+### 1. react-live2d-lipsync (NPMパッケージ)
 
-- **フロントエンド**: Next.js 14 (App Router) + TypeScript + Tailwind CSS
-- **Live2D**: pixi-live2d-display v0.4.0 + Pixi.js v7.4.2
-- **音声解析**: Web Audio API (AnalyserNode)
-- **TTS**: Google Cloud Text-to-Speech API
-- **コンテナ**: Docker + Docker Compose
+**場所**: [`/react-live2d-lipsync/`](./react-live2d-lipsync/)
 
-## セットアップ
+Reactコンポーネントとして使用可能なLive2Dリップシンクライブラリです。
 
-### 前提条件
+**特徴**:
+- 🎭 Live2D Cubism 2/3モデル対応
+- 🎤 リアルタイムリップシンク
+- 👁️ 自動まばたき
+- ⚙️ 豊富なカスタマイズオプション
+- 📦 TypeScript完全対応
 
-- Node.js 20以上
-- Docker & Docker Compose（オプション）
-- Google Cloud Text-to-Speech API キー
-
-### 環境変数の設定
-
-プロジェクトルートに `.env.local` ファイルを作成:
-
+**インストール**:
 ```bash
-GOOGLE_TTS_API_KEY=your_api_key_here
+# GitHubから直接インストール
+npm install Yuta-Hachino/motion-chara#v1.0.0
 ```
 
-### インストール & 実行
+**詳細**: [react-live2d-lipsync/README.md](./react-live2d-lipsync/README.md)
 
-#### ローカル環境
+### 2. サンプルアプリケーション (Next.js)
+
+**場所**: ルートディレクトリ（将来的に `/example/` に移動予定）
+
+パッケージの使用例を示すNext.jsアプリケーションです。
+
+**機能**:
+- テキスト読み上げ（Google TTS）
+- 音声ファイルアップロード
+- リアルタイムリップシンク
+- キャラクター位置・サイズ調整
+
+## 🚀 クイックスタート
+
+### パッケージを使用する
 
 ```bash
-# 依存関係のインストール
+# 1. インストール
+npm install Yuta-Hachino/motion-chara#v1.0.0
+
+# 2. 使用
+import { Live2DCharacter, useLive2DAudio } from 'react-live2d-lipsync';
+
+function App() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const { audioVolume } = useLive2DAudio({ audioElement: audioRef.current });
+
+  return (
+    <>
+      <Live2DCharacter
+        modelPath="/models/character.model3.json"
+        audioVolume={audioVolume}
+      />
+      <audio ref={audioRef} src="/audio.mp3" controls />
+    </>
+  );
+}
+```
+
+### サンプルアプリを起動する
+
+サンプルアプリは `react-live2d-lipsync` パッケージを実際に使用しています。
+
+```bash
+# 1. パッケージをビルド
+cd react-live2d-lipsync
+npm install
+npm run build
+cd ..
+
+# 2. アプリの依存関係インストール（パッケージを含む）
 npm install
 
-# 開発サーバー起動
+# 3. 環境変数設定
+cp .env.local.example .env.local
+# GOOGLE_TTS_API_KEY を設定
+
+# 4. 開発サーバー起動
+npm run dev
+
+# 5. ブラウザで開く
+open http://localhost:3000
+```
+
+**注意**: サンプルアプリはローカルパッケージ (`file:./react-live2d-lipsync`) を参照しています。
+
+## 📚 ドキュメント
+
+### パッケージドキュメント
+
+- [README](./react-live2d-lipsync/README.md) - パッケージ概要とAPI
+- [QUICKSTART](./react-live2d-lipsync/QUICKSTART.md) - クイックスタートガイド
+- [USAGE](./react-live2d-lipsync/USAGE.md) - 詳細な使用方法
+- [SCRIPTS](./react-live2d-lipsync/SCRIPTS.md) - NPMスクリプト一覧
+- [INSTALL_FROM_GITHUB](./react-live2d-lipsync/INSTALL_FROM_GITHUB.md) - GitHubインストール方法
+- [GITHUB_RELEASE](./react-live2d-lipsync/GITHUB_RELEASE.md) - リリース手順
+
+### サンプルアプリドキュメント
+
+- [README_APP](./README_APP.md) - アプリの詳細説明
+- [GOOGLE_TTS_SETUP](./GOOGLE_TTS_SETUP.md) - Google TTS API設定
+- [DEPLOYMENT](./DEPLOYMENT.md) - GCP Cloud Runへのデプロイ
+
+## 🎯 使用例
+
+### 基本的な使用
+
+```tsx
+import { Live2DCharacter, useLive2DAudio } from 'react-live2d-lipsync';
+
+function BasicExample() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const { audioVolume } = useLive2DAudio({ audioElement: audioRef.current });
+
+  return (
+    <div>
+      <Live2DCharacter
+        modelPath="/live2d/model.model3.json"
+        audioVolume={audioVolume}
+        width={640}
+        height={960}
+      />
+      <audio ref={audioRef} src="/speech.mp3" controls />
+    </div>
+  );
+}
+```
+
+### カスタマイズ
+
+```tsx
+<Live2DCharacter
+  modelPath="/model.model3.json"
+  audioVolume={audioVolume}
+  positionY={-0.3}          // 位置調整
+  scale={1.2}               // サイズ調整
+  enableBlinking={true}     // まばたき
+  blinkInterval={[3000, 5000]}  // まばたき間隔
+  lipSyncSensitivity={1.5}  // リップシンク感度
+/>
+```
+
+## 🛠️ 開発
+
+### パッケージ開発
+
+```bash
+cd react-live2d-lipsync
+
+# 依存関係インストール
+npm install
+
+# 開発モード
+npm run dev
+
+# ビルド
+npm run build
+
+# ローカルテスト
+npm run link:local
+```
+
+### サンプルアプリ開発
+
+```bash
+# ルートディレクトリで
+npm install
 npm run dev
 ```
 
-ブラウザで http://localhost:3000 を開く
+## 🌐 デプロイ
 
-#### Docker環境
+### パッケージリリース（GitHub）
 
 ```bash
-# ビルド & 起動
-docker-compose up --build
+cd react-live2d-lipsync
 
-# バックグラウンド実行
-docker-compose up -d
+# ビルド + コミット + プッシュ
+make release-github
 
-# 停止
-docker-compose down
+# タグ作成
+make release-tag TAG=v1.0.0
+
+# プッシュ
+make release-push
 ```
 
-### Live2D モデルの配置
+### サンプルアプリデプロイ（GCP Cloud Run）
 
-1. Live2D Cubism モデルを `public/models/` に配置
-2. デフォルトパス: `/models/haru/haru_greeter_t03.model3.json`
-
-例:
-```
-public/
-└── models/
-    └── haru/
-        ├── haru_greeter_t03.model3.json
-        ├── haru_greeter_t03.moc3
-        ├── haru_greeter_t03.physics3.json
-        └── textures/
-            └── texture_00.png
+```bash
+# ルートディレクトリで
+./deploy.sh
 ```
 
-## 使い方
+詳細: [DEPLOYMENT.md](./DEPLOYMENT.md)
 
-1. **テキスト入力方式**:
-   - テキストエリアに日本語を入力
-   - 「音声を生成して再生」ボタンをクリック
-   - Google TTS で音声が生成され、自動再生
+## 📋 必要要件
 
-2. **音声ファイル方式**:
-   - 「音声ファイルアップロード」セクションでファイルを選択
-   - 音声が自動再生され、リップシンク開始
+### パッケージ
 
-3. **モデル選択**:
-   - ドロップダウンから Live2D モデルを選択（カスタムモデル追加可能）
+- React >= 18.0.0
+- react-dom >= 18.0.0
+- Node.js >= 18.0.0
 
-## 仕組み
+### サンプルアプリ
 
-### リップシンク
+- Next.js 14
+- Google TTS API キー（オプション）
 
-- Web Audio API の `AnalyserNode` で音声の周波数データを取得
-- リアルタイムで音量（0-1の範囲）を計算
-- Live2D の `ParamMouthOpenY` パラメータに反映
+## 🎨 Live2D モデル
 
-### まばたき
+Live2Dモデルは以下のパラメータが必要です：
 
-- 2〜6秒のランダム間隔でまばたきをトリガー
-- `ParamEyeLOpen` と `ParamEyeROpen` を 0 に設定（閉じる）
-- 100-120ms 後に 1 に戻す（開く）
+- `ParamMouthOpenY` - リップシンク用
+- `ParamEyeLOpen` - 左目まばたき用
+- `ParamEyeROpen` - 右目まばたき用
 
-## ファイル構成
+サンプルモデル：`public/live2d/lan/`
 
-```
-motion-chara/
-├── app/
-│   ├── api/
-│   │   └── tts/
-│   │       └── route.ts         # Google TTS API エンドポイント
-│   ├── page.tsx                 # メインページ UI
-│   ├── layout.tsx               # アプリケーションレイアウト
-│   └── globals.css              # グローバル CSS
-├── components/
-│   └── Live2DModel.tsx          # Live2D モデル描画コンポーネント
-├── lib/
-│   └── audioAnalyzer.ts         # 音声解析ユーティリティ
-├── public/
-│   └── models/                  # Live2D モデルファイル
-├── Dockerfile                   # Docker イメージ定義
-├── docker-compose.yml           # Docker Compose 設定
-├── package.json
-└── README.md
-```
+## 🔧 トラブルシューティング
 
-## API エンドポイント
+### モデルが表示されない
 
-### POST /api/tts
-
-日本語テキストを音声に変換
-
-**リクエスト:**
-```json
-{
-  "text": "こんにちは"
-}
-```
-
-**レスポンス:**
-```json
-{
-  "audioContent": "base64_encoded_mp3_data"
-}
-```
-
-## トラブルシューティング
-
-### モデルが読み込まれない
-
-- Live2D モデルのパスが正しいか確認
-- `model3.json` ファイルと関連ファイル（.moc3, textures）が揃っているか確認
-
-### 音声が再生されない
-
-- Google TTS API キーが正しく設定されているか確認
-- ブラウザのコンソールでエラーを確認
+1. Live2D SDKスクリプトが読み込まれているか確認
+2. モデルパスが正しいか確認
+3. ブラウザコンソールでエラーを確認
 
 ### リップシンクが動作しない
 
-- ブラウザが Web Audio API をサポートしているか確認
-- 音声が実際に再生されているか確認
+1. `audioVolume`プロパティが更新されているか確認
+2. オーディオが実際に再生されているか確認
+3. `enableLipSync={true}`が設定されているか確認
 
-## ライセンス
+## 🤝 コントリビューション
+
+プルリクエスト歓迎！
+
+1. Fork する
+2. Feature ブランチを作成 (`git checkout -b feature/amazing-feature`)
+3. 変更をコミット (`git commit -m 'Add amazing feature'`)
+4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
+5. プルリクエストを作成
+
+## 📄 ライセンス
 
 MIT
 
-## クレジット
+## 🙏 クレジット
 
-- [Live2D Cubism SDK for Web](https://www.live2d.com/en/download/cubism-sdk/)
+- [Pixi.js](https://pixijs.com/)
 - [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
-- [Google Cloud Text-to-Speech](https://cloud.google.com/text-to-speech)
+- [Live2D Cubism SDK](https://www.live2d.com/)
+
+## 📞 お問い合わせ
+
+- GitHub Issues: [https://github.com/Yuta-Hachino/motion-chara/issues](https://github.com/Yuta-Hachino/motion-chara/issues)
+- Repository: [https://github.com/Yuta-Hachino/motion-chara](https://github.com/Yuta-Hachino/motion-chara)
+
+---
+
+Made with ❤️ by Yuta Hachino

@@ -1,26 +1,29 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
-import { AudioAnalyzer } from "@/lib/audioAnalyzer";
+import { useLive2DAudio } from "react-live2d-lipsync";
 
-const Live2DModelComponent = dynamic(
-  () => import("@/components/Live2DModel"),
+// Live2DCharacterをdynamic importでSSRを無効化
+const Live2DCharacter = dynamic(
+  () => import("react-live2d-lipsync").then((mod) => mod.Live2DCharacter),
   { ssr: false }
 );
 
 export default function Home() {
   const [text, setText] = useState("");
-  const [audioVolume, setAudioVolume] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [modelPath, setModelPath] = useState("/live2d/lan/lan.model3.json");
-  const [positionY, setPositionY] = useState(-0.3); // Default position slightly up
+  const [positionY, setPositionY] = useState(-0.3);
   const [modelScale, setModelScale] = useState(1.0);
 
   const audioRef = useRef<HTMLAudioElement>(null);
-  const analyzerRef = useRef<AudioAnalyzer | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
+
+  // パッケージのuseLive2DAudioフックを使用
+  const { audioVolume } = useLive2DAudio({
+    audioElement: audioRef.current,
+  });
 
   const handleTextToSpeech = async () => {
     if (!text.trim()) {
@@ -72,51 +75,6 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const handlePlay = () => {
-      if (!analyzerRef.current) {
-        analyzerRef.current = new AudioAnalyzer();
-        analyzerRef.current.initialize(audio);
-      }
-
-      const updateVolume = () => {
-        if (analyzerRef.current && !audio.paused) {
-          const volume = analyzerRef.current.getVolume();
-          setAudioVolume(volume);
-          animationFrameRef.current = requestAnimationFrame(updateVolume);
-        }
-      };
-
-      updateVolume();
-    };
-
-    const handlePause = () => {
-      setAudioVolume(0);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-
-    audio.addEventListener("play", handlePlay);
-    audio.addEventListener("pause", handlePause);
-    audio.addEventListener("ended", handlePause);
-
-    return () => {
-      audio.removeEventListener("play", handlePlay);
-      audio.removeEventListener("pause", handlePause);
-      audio.removeEventListener("ended", handlePause);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (analyzerRef.current) {
-        analyzerRef.current.cleanup();
-      }
-    };
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 to-purple-100 p-8">
       <div className="max-w-6xl mx-auto">
@@ -124,14 +82,28 @@ export default function Home() {
           Live2D リップシンク & まばたきアプリ
         </h1>
 
+        <div className="mb-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800">
+            📦 <strong>このアプリは react-live2d-lipsync パッケージを使用しています</strong>
+          </p>
+          <p className="text-xs text-blue-600 mt-1">
+            パッケージのインストール: <code className="bg-blue-100 px-2 py-1 rounded">npm install Yuta-Hachino/motion-chara#v1.0.0</code>
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Live2D Model Display */}
           <div className="flex justify-center">
-            <Live2DModelComponent
+            <Live2DCharacter
               modelPath={modelPath}
               audioVolume={audioVolume}
               positionY={positionY}
               scale={modelScale}
+              width={640}
+              height={960}
+              enableBlinking={true}
+              enableLipSync={true}
+              lipSyncSensitivity={1.5}
             />
           </div>
 
@@ -273,6 +245,17 @@ export default function Home() {
             <li>Live2Dモデルが音声に合わせてリップシンクとまばたきを行います</li>
             <li>環境変数にGOOGLE_TTS_API_KEYを設定してください</li>
           </ol>
+        </div>
+
+        {/* Package Info */}
+        <div className="mt-8 bg-gray-50 rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800">パッケージ情報</h2>
+          <div className="space-y-2 text-sm text-gray-700">
+            <p><strong>パッケージ名:</strong> react-live2d-lipsync</p>
+            <p><strong>バージョン:</strong> 1.0.0</p>
+            <p><strong>リポジトリ:</strong> <a href="https://github.com/Yuta-Hachino/motion-chara" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Yuta-Hachino/motion-chara</a></p>
+            <p><strong>インストール:</strong> <code className="bg-gray-200 px-2 py-1 rounded text-xs">npm install Yuta-Hachino/motion-chara#v1.0.0</code></p>
+          </div>
         </div>
       </div>
     </div>

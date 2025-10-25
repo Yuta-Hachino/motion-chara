@@ -1,0 +1,19 @@
+# Source files
+src/
+
+# Config files
+tsconfig.json
+rollup.config.js
+
+# Development files
+examples/
+*.test.ts
+*.test.tsx
+
+# Git
+.git/
+.gitignore
+
+# Editor
+.vscode/
+.idea/

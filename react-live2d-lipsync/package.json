@@ -1,0 +1,78 @@
+{
+  "name": "react-live2d-lipsync",
+  "version": "1.0.0",
+  "description": "React component for Live2D character with lip-sync and blinking animations",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "rollup -c -w",
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w",
+    "clean": "rm -rf dist",
+    "rebuild": "npm run clean && npm run build",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run rebuild",
+    "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:major": "npm version major && npm publish",
+    "publish:beta": "npm version prerelease --preid=beta && npm publish --tag beta",
+    "publish:dry": "npm publish --dry-run",
+    "pack:local": "npm pack",
+    "install:local": "npm pack && npm install -g react-live2d-lipsync-*.tgz",
+    "uninstall:local": "npm uninstall -g react-live2d-lipsync",
+    "link:local": "npm link",
+    "unlink:local": "npm unlink",
+    "test:build": "npm run build && node -e \"console.log('Build successful!')\"",
+    "validate": "npm run typecheck && npm run build",
+    "preversion": "npm run validate",
+    "postversion": "git push && git push --tags",
+    "info": "npm pack --dry-run",
+    "prepare:github": "npm run build && git add dist/ && git status",
+    "release:tag": "git tag -a",
+    "release:push": "git push && git push --tags",
+    "release:github": "npm run build && git add dist/ && git commit -m 'Update build files' && git push"
+  },
+  "keywords": [
+    "react",
+    "live2d",
+    "lipsync",
+    "animation",
+    "pixi.js",
+    "character",
+    "avatar"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "pixi-live2d-display": "^0.4.0",
+    "pixi.js": "^6.5.10"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rollup": "^4.9.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yuta-Hachino/motion-chara",
+    "directory": "react-live2d-lipsync"
+  }
+}
