@@ -86,7 +86,7 @@ const DefaultErrorComponent = ({ error }) => (React.createElement("div", { style
  * }
  * ```
  */
-const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelError, positionY = 0, positionX = 0, scale = 1, width = 640, height = 960, backgroundColor = 0xf0f0f0, antialias = true, className = '', style = {}, enableBlinking = true, blinkInterval = [2000, 6000], blinkDuration = 100, enableLipSync = true, lipSyncSensitivity = 1.5, showLoading = true, showError = true, loadingComponent, errorComponent, 
+const Live2DCharacter = ({ modelPath, audioVolume = 0, onModelLoaded, onModelError, positionY = 0, positionX = 0, scale = 1, width = 640, height = 960, backgroundColor = 0xf0f0f0, backgroundAlpha = 1, antialias = true, className = '', style = {}, enableBlinking = true, blinkInterval = [2000, 6000], blinkDuration = 100, enableLipSync = true, lipSyncSensitivity = 1.5, showLoading = true, showError = true, loadingComponent, errorComponent, 
 // Phase 1
 expression, expressions, onExpressionChanged, enableBreathing = true, breathingSpeed = 1.0, breathingIntensity = 0.5, fps = 60, resolution = 1, autoQuality = false, 
 // Phase 2
@@ -138,6 +138,7 @@ preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreload
                     width: width * resolution,
                     height: height * resolution,
                     backgroundColor,
+                    backgroundAlpha,
                     antialias,
                     resolution,
                 });
@@ -232,7 +233,7 @@ preloadExpressions = false, preloadMotions = false, onPreloadComplete, onPreload
                 canvasRef.current.innerHTML = '';
             }
         };
-    }, [modelPath, width, height, backgroundColor, antialias, enableBlinking, enableBreathing]);
+    }, [modelPath, width, height, backgroundColor, backgroundAlpha, antialias, enableBlinking, enableBreathing]);
     // Blinking animation
     const startBlinking = () => {
         const blink = () => {

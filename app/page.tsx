@@ -164,6 +164,9 @@ export default function Home() {
               scale={modelScale}
               width={640}
               height={960}
+              backgroundColor={0x000000}
+              backgroundAlpha={0}
+              antialias={true}
               enableBlinking={true}
               enableLipSync={true}
               lipSyncSensitivity={1.5}

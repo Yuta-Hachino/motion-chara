@@ -89,6 +89,7 @@ export const Live2DCharacter: React.FC<Live2DCharacterProps> = ({
   width = 640,
   height = 960,
   backgroundColor = 0xf0f0f0,
+  backgroundAlpha = 1,
   antialias = true,
   className = '',
   style = {},
@@ -180,6 +181,7 @@ export const Live2DCharacter: React.FC<Live2DCharacterProps> = ({
           width: width * resolution,
           height: height * resolution,
           backgroundColor,
+          backgroundAlpha,
           antialias,
           resolution,
         });
@@ -291,7 +293,7 @@ export const Live2DCharacter: React.FC<Live2DCharacterProps> = ({
         canvasRef.current.innerHTML = '';
       }
     };
-  }, [modelPath, width, height, backgroundColor, antialias, enableBlinking, enableBreathing]);
+  }, [modelPath, width, height, backgroundColor, backgroundAlpha, antialias, enableBlinking, enableBreathing]);
 
   // Blinking animation
   const startBlinking = () => {
