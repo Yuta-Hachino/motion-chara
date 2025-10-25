@@ -24,6 +24,17 @@ export default function Home() {
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [backgroundColor, setBackgroundColor] = useState("#f3e5f5");
 
+  // v1.1.0 新機能の状態
+  const [enableBreathing, setEnableBreathing] = useState(true);
+  const [breathingSpeed, setBreathingSpeed] = useState(1.0);
+  const [breathingIntensity, setBreathingIntensity] = useState(0.5);
+  const [enableMouseTracking, setEnableMouseTracking] = useState(false);
+  const [trackingSmoothing, setTrackingSmoothing] = useState(0.1);
+  const [trackingRange, setTrackingRange] = useState(30);
+  const [fps, setFps] = useState(60);
+  const [resolution, setResolution] = useState(1);
+  const [autoQuality, setAutoQuality] = useState(false);
+
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // パッケージのuseLive2DAudioフックを使用
@@ -130,7 +141,7 @@ export default function Home() {
             📦 <strong>このアプリは react-live2d-lipsync パッケージを使用しています</strong>
           </p>
           <p className="text-xs text-blue-600 mt-1">
-            パッケージのインストール: <code className="bg-blue-100 px-2 py-1 rounded">npm install Yuta-Hachino/motion-chara#v1.0.0</code>
+            パッケージのインストール: <code className="bg-blue-100 px-2 py-1 rounded">npm install Yuta-Hachino/react-live2d-lipsync#v1.1.0</code>
           </p>
         </div>
 
@@ -156,6 +167,17 @@ export default function Home() {
               enableBlinking={true}
               enableLipSync={true}
               lipSyncSensitivity={1.5}
+              // v1.1.0 新機能
+              enableBreathing={enableBreathing}
+              breathingSpeed={breathingSpeed}
+              breathingIntensity={breathingIntensity}
+              enableMouseTracking={enableMouseTracking}
+              trackingSmoothing={trackingSmoothing}
+              trackingRange={trackingRange}
+              fps={fps}
+              resolution={resolution}
+              autoQuality={autoQuality}
+              ariaLabel="Live2D キャラクター - 音声に合わせてリップシンクとまばたきを行います"
             />
           </div>
 
@@ -386,6 +408,193 @@ export default function Home() {
               </button>
             </div>
 
+            {/* NEW: Breathing Animation Settings (v1.1.0) */}
+            <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-lg shadow-lg p-6 border-2 border-green-200">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  💨 呼吸アニメーション
+                </h2>
+                <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">v1.1.0</span>
+              </div>
+
+              {/* Enable Breathing Toggle */}
+              <div className="mb-4">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enableBreathing}
+                    onChange={(e) => setEnableBreathing(e.target.checked)}
+                    className="mr-2 h-5 w-5 rounded"
+                  />
+                  <span className="text-sm font-medium text-gray-700">呼吸を有効化</span>
+                </label>
+              </div>
+
+              {enableBreathing && (
+                <>
+                  {/* Breathing Speed */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      呼吸速度: {breathingSpeed.toFixed(1)}x
+                    </label>
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="2"
+                      step="0.1"
+                      value={breathingSpeed}
+                      onChange={(e) => setBreathingSpeed(parseFloat(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Breathing Intensity */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      呼吸強度: {breathingIntensity.toFixed(1)}
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={breathingIntensity}
+                      onChange={(e) => setBreathingIntensity(parseFloat(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* NEW: Mouse Tracking Settings (v1.1.0) */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-lg p-6 border-2 border-blue-200">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  🖱️ マウストラッキング
+                </h2>
+                <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">v1.1.0</span>
+              </div>
+
+              {/* Enable Mouse Tracking Toggle */}
+              <div className="mb-4">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enableMouseTracking}
+                    onChange={(e) => setEnableMouseTracking(e.target.checked)}
+                    className="mr-2 h-5 w-5 rounded"
+                  />
+                  <span className="text-sm font-medium text-gray-700">マウストラッキングを有効化</span>
+                </label>
+                <p className="mt-1 text-xs text-gray-600">キャラクターがカーソルを追いかけます</p>
+              </div>
+
+              {enableMouseTracking && (
+                <>
+                  {/* Tracking Smoothing */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      スムージング: {trackingSmoothing.toFixed(2)}
+                    </label>
+                    <input
+                      type="range"
+                      min="0.01"
+                      max="0.5"
+                      step="0.01"
+                      value={trackingSmoothing}
+                      onChange={(e) => setTrackingSmoothing(parseFloat(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>滑らか</span>
+                      <span>反応速い</span>
+                    </div>
+                  </div>
+
+                  {/* Tracking Range */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      追従範囲: {trackingRange}°
+                    </label>
+                    <input
+                      type="range"
+                      min="10"
+                      max="60"
+                      step="5"
+                      value={trackingRange}
+                      onChange={(e) => setTrackingRange(parseInt(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* NEW: Performance Settings (v1.1.0) */}
+            <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg shadow-lg p-6 border-2 border-orange-200">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  ⚡ パフォーマンス設定
+                </h2>
+                <span className="text-xs bg-orange-500 text-white px-2 py-1 rounded">v1.1.0</span>
+              </div>
+
+              {/* FPS Control */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  FPS制限: {fps}
+                </label>
+                <input
+                  type="range"
+                  min="15"
+                  max="60"
+                  step="15"
+                  value={fps}
+                  onChange={(e) => setFps(parseInt(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>省電力</span>
+                  <span>滑らか</span>
+                </div>
+              </div>
+
+              {/* Resolution Control */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  解像度: {(resolution * 100).toFixed(0)}%
+                </label>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="1"
+                  step="0.1"
+                  value={resolution}
+                  onChange={(e) => setResolution(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>軽量</span>
+                  <span>高品質</span>
+                </div>
+              </div>
+
+              {/* Auto Quality */}
+              <div className="mb-4">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={autoQuality}
+                    onChange={(e) => setAutoQuality(e.target.checked)}
+                    className="mr-2 h-5 w-5 rounded"
+                  />
+                  <span className="text-sm font-medium text-gray-700">自動品質調整</span>
+                </label>
+                <p className="mt-1 text-xs text-gray-600">パフォーマンスに応じて自動で品質を調整</p>
+              </div>
+            </div>
+
             {/* Error Display */}
             {error && (
               <div className="bg-red-100 border-2 border-red-400 rounded-lg p-4">
@@ -434,9 +643,10 @@ export default function Home() {
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">パッケージ情報</h2>
           <div className="space-y-2 text-sm text-gray-700">
             <p><strong>パッケージ名:</strong> react-live2d-lipsync</p>
-            <p><strong>バージョン:</strong> 1.0.0</p>
-            <p><strong>リポジトリ:</strong> <a href="https://github.com/Yuta-Hachino/motion-chara" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Yuta-Hachino/motion-chara</a></p>
-            <p><strong>インストール:</strong> <code className="bg-gray-200 px-2 py-1 rounded text-xs">npm install Yuta-Hachino/motion-chara#v1.0.0</code></p>
+            <p><strong>バージョン:</strong> 1.1.0</p>
+            <p><strong>リポジトリ:</strong> <a href="https://github.com/Yuta-Hachino/react-live2d-lipsync" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Yuta-Hachino/react-live2d-lipsync</a></p>
+            <p><strong>インストール:</strong> <code className="bg-gray-200 px-2 py-1 rounded text-xs">npm install Yuta-Hachino/react-live2d-lipsync#v1.1.0</code></p>
+            <p className="mt-2"><strong>新機能 (v1.1.0):</strong> 呼吸アニメーション、マウストラッキング、パフォーマンス最適化</p>
           </div>
         </div>
       </div>
