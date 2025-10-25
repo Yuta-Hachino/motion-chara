@@ -12,6 +12,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
   return (
     <html lang="ja">
       <body className="antialiased">
@@ -20,7 +22,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
         <Script
-          src="/live2dcubismcore.min.js"
+          src={`${basePath}/live2dcubismcore.min.js`}
           strategy="beforeInteractive"
         />
         {children}

@@ -11,10 +11,12 @@ const Live2DCharacter = dynamic(
 );
 
 export default function Home() {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [modelPath, setModelPath] = useState("/live2d/lan/lan.model3.json");
+  const [modelPath, setModelPath] = useState(`${basePath}/live2d/lan/lan.model3.json`);
   const [positionY, setPositionY] = useState(-0.3);
   const [modelScale, setModelScale] = useState(1.0);
   const [apiKey, setApiKey] = useState("");
@@ -225,7 +227,7 @@ export default function Home() {
                 onChange={(e) => setModelPath(e.target.value)}
                 className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
               >
-                <option value="/live2d/lan/lan.model3.json">
+                <option value={`${basePath}/live2d/lan/lan.model3.json`}>
                   Lan (デフォルト)
                 </option>
               </select>
