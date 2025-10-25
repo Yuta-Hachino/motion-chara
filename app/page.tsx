@@ -2,11 +2,11 @@
 
 import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
-import { useLive2DAudio } from "react-live2d-lipsync";
+import { useLive2DAudio } from "../react-live2d-lipsync/src";
 
 // Live2DCharacterをdynamic importでSSRを無効化
 const Live2DCharacter = dynamic(
-  () => import("react-live2d-lipsync").then((mod) => mod.Live2DCharacter),
+  () => import("../react-live2d-lipsync/src").then((mod) => mod.Live2DCharacter),
   { ssr: false }
 );
 
@@ -164,9 +164,7 @@ export default function Home() {
               scale={modelScale}
               width={640}
               height={960}
-              backgroundColor={0x000000}
               backgroundAlpha={0}
-              antialias={true}
               enableBlinking={true}
               enableLipSync={true}
               lipSyncSensitivity={1.5}
