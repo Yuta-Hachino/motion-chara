@@ -125,6 +125,57 @@ function App() {
 />
 ```
 
+### Background Customization
+
+The Live2D character component is transparent, so you can easily customize the background using CSS:
+
+```tsx
+// Solid color background
+<div style={{ backgroundColor: '#f3e5f5' }}>
+  <Live2DCharacter
+    modelPath="/models/character.model3.json"
+    audioVolume={audioVolume}
+  />
+</div>
+
+// Background image
+<div style={{
+  backgroundImage: 'url(/images/background.jpg)',
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat'
+}}>
+  <Live2DCharacter
+    modelPath="/models/character.model3.json"
+    audioVolume={audioVolume}
+  />
+</div>
+
+// Gradient background
+<div style={{
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+}}>
+  <Live2DCharacter
+    modelPath="/models/character.model3.json"
+    audioVolume={audioVolume}
+  />
+</div>
+
+// Dynamic background with state
+function CharacterWithBackground() {
+  const [bgImage, setBgImage] = useState<string | null>(null);
+
+  return (
+    <div style={{
+      backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+      backgroundColor: bgImage ? 'transparent' : '#f3e5f5'
+    }}>
+      <Live2DCharacter modelPath="/models/character.model3.json" audioVolume={0} />
+    </div>
+  );
+}
+```
+
 ### Using Audio Hook with Options
 
 ```tsx

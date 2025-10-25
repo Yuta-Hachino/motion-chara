@@ -401,22 +401,31 @@ export default function Home() {
         {/* Instructions */}
         <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">使い方</h2>
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">
+          <ol className="list-decimal list-inside space-y-3 text-gray-700">
             <li>
               <strong>テキスト読み上げを使う場合:</strong>
               <ul className="list-disc list-inside ml-6 mt-1 space-y-1 text-sm">
-                <li>API設定からGoogle TTS APIキーを入力</li>
+                <li>API設定セクションで「表示」をクリック</li>
+                <li>Google TTS APIキーを入力（<a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Cloud Consoleから取得</a>）</li>
                 <li>テキストを入力して「音声を生成して再生」ボタンをクリック</li>
               </ul>
             </li>
             <li>
               <strong>音声ファイルを使う場合:</strong>
               <ul className="list-disc list-inside ml-6 mt-1 space-y-1 text-sm">
-                <li>音声ファイルをアップロードして再生（APIキー不要）</li>
+                <li>音声ファイル（MP3/WAV/OGG）をアップロードして再生</li>
+                <li>APIキー不要で簡単に試せます</li>
+              </ul>
+            </li>
+            <li>
+              <strong>カスタマイズ:</strong>
+              <ul className="list-disc list-inside ml-6 mt-1 space-y-1 text-sm">
+                <li>モデル調整: キャラクターの位置とサイズを調整</li>
+                <li>背景設定: 背景色や背景画像を自由に設定</li>
+                <li>モデル選択: 異なるLive2Dモデルを選択（追加可能）</li>
               </ul>
             </li>
             <li>Live2Dモデルが音声に合わせてリップシンクとまばたきを行います</li>
-            <li>モデルの位置やサイズは調整可能です</li>
           </ol>
         </div>
 

@@ -146,6 +146,33 @@ function BasicExample() {
 />
 ```
 
+### 背景のカスタマイズ
+
+キャラクター表示エリアの背景は、通常のCSSで自由にカスタマイズできます：
+
+```tsx
+// 背景色を設定
+<div style={{ backgroundColor: '#f3e5f5' }}>
+  <Live2DCharacter modelPath="/model.model3.json" audioVolume={audioVolume} />
+</div>
+
+// 背景画像を設定
+<div style={{
+  backgroundImage: 'url(/background.jpg)',
+  backgroundSize: 'cover',
+  backgroundPosition: 'center'
+}}>
+  <Live2DCharacter modelPath="/model.model3.json" audioVolume={audioVolume} />
+</div>
+
+// グラデーション背景
+<div style={{
+  background: 'linear-gradient(to bottom, #667eea, #764ba2)'
+}}>
+  <Live2DCharacter modelPath="/model.model3.json" audioVolume={audioVolume} />
+</div>
+```
+
 ## 🛠️ 開発
 
 ### パッケージ開発
