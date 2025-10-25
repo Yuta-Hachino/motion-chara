@@ -125,8 +125,8 @@ export PROJECT_ID="gen-lang-client-0830629645"
 export GOOGLE_TTS_API_KEY="AIzaSyAUo1cvV18sM66Zof3Z1UN79a1j1fOdyXc"
 
 # デプロイ
-chmod +x deploy.sh
-./deploy.sh
+chmod +x scripts/deploy.sh
+./scripts/deploy.sh
 ```
 
 ## 方法3: GitHub ActionsでCI/CDセットアップ（推奨）

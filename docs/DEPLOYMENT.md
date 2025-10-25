@@ -41,7 +41,7 @@ gcloud config get-value project
 
 ### 4. デプロイスクリプトの編集
 
-`deploy.sh` ファイルを開き、以下を設定:
+`scripts/deploy.sh` ファイルを開き、以下を設定:
 
 ```bash
 PROJECT_ID="your-gcp-project-id"  # ステップ3で確認したIDに置き換え
@@ -60,7 +60,7 @@ export GOOGLE_TTS_API_KEY="AIzaSyAUo1cvV18sM66Zof3Z1UN79a1j1fOdyXc"
 ### 6. デプロイの実行
 
 ```bash
-./deploy.sh
+./scripts/deploy.sh
 ```
 
 このスクリプトは以下を自動的に実行します:
@@ -163,7 +163,7 @@ Cloud Run の料金:
 アプリを更新した後、再度デプロイ:
 
 ```bash
-./deploy.sh
+./scripts/deploy.sh
 ```
 
 または:

@@ -106,9 +106,9 @@ open http://localhost:3000
 
 ### サンプルアプリドキュメント
 
-- [README_APP](./README_APP.md) - アプリの詳細説明
-- [GOOGLE_TTS_SETUP](./GOOGLE_TTS_SETUP.md) - Google TTS API設定
-- [DEPLOYMENT](./DEPLOYMENT.md) - GCP Cloud Runへのデプロイ
+- [README_APP](./docs/README_APP.md) - アプリの詳細説明
+- [GOOGLE_TTS_SETUP](./docs/GOOGLE_TTS_SETUP.md) - Google TTS API設定
+- [DEPLOYMENT](./docs/DEPLOYMENT.md) - GCP Cloud Runへのデプロイ
 
 ## 🎯 使用例
 
@@ -198,10 +198,10 @@ make release-push
 
 ```bash
 # ルートディレクトリで
-./deploy.sh
+./scripts/deploy.sh
 ```
 
-詳細: [DEPLOYMENT.md](./DEPLOYMENT.md)
+詳細: [DEPLOYMENT.md](./docs/DEPLOYMENT.md)
 
 ## 📋 必要要件
 
